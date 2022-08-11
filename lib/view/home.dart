@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:spot_me/route/route.dart' as route;
+import 'package:spot_me/widgets/bottom_navigation.dart';
 
 class homepage extends StatefulWidget {
   const homepage({Key? key}) : super(key: key);
@@ -12,6 +12,9 @@ class homepage extends StatefulWidget {
 class _homepageState extends State<homepage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: SingleChildScrollView(),
+      bottomNavigationBar: BottomNavBarWidget(),
+    );
   }
 }
