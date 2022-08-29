@@ -1,6 +1,9 @@
-# spot_me
+# SPOTME
 
-A new Flutter project.
+A mobile application that assist Malaysian people during flood disaster.
+
+## Description
+I build this mobile application based on flutter framework and firebase as its database. This project is for my final year project.
 
 ## Getting Started
 

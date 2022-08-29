@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:sign_button/sign_button.dart';
 import 'package:spot_me/route/route.dart' as route;
+import 'package:spot_me/service/firebase_authentication.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -10,6 +12,17 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  void loginUser() {
+    FirebaseAuthMethods(FirebaseAuth.instance).loginWithEmail(
+      email: emailController.text,
+      password: passwordController.text,
+      context: context,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,10 +39,11 @@ class _LoginPageState extends State<LoginPage> {
                   child: Image.asset('asset/images/logo.png')),
             ),
           ),
-          const Padding(
+          Padding(
             padding:
                 EdgeInsets.only(left: 15.0, right: 15.0, top: 10, bottom: 0),
             child: TextField(
+              controller: emailController,
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Icons.account_circle_rounded,
@@ -38,15 +52,16 @@ class _LoginPageState extends State<LoginPage> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 ),
-                labelText: 'Email Or Phone Number',
+                labelText: 'Email',
                 hintText: '',
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(
-                left: 15.0, right: 15.0, top: 15, bottom: 0),
+            padding:
+                EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
             child: TextField(
+              controller: passwordController,
               obscureText: true,
               decoration: InputDecoration(
                   prefixIcon: const Icon(
@@ -60,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: ''),
             ),
           ),
-                    SizedBox(
+          SizedBox(
             height: 10,
           ),
           GestureDetector(
@@ -75,11 +90,27 @@ class _LoginPageState extends State<LoginPage> {
               );
             },
           ),
-                    SizedBox(
+          SizedBox(
             height: 15,
           ),
-          const SignInButt(),
-                    SizedBox(
+          ElevatedButton(
+            onPressed: loginUser,
+            style: ElevatedButton.styleFrom(
+              primary: Colors.red, // Background color
+            ),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 42.0),
+              child: Text(
+                "Sign In",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15.0,
+                    fontFamily: "WorkSansBold"),
+              ),
+            ),
+          ),
+          SizedBox(
             height: 10,
           ),
           Container(
@@ -133,60 +164,41 @@ class _LoginPageState extends State<LoginPage> {
             // Even Padding On All Sides
             padding: EdgeInsets.all(10.0),
             child: SignInButton(
-              Buttons.GoogleDark,
-              padding: const EdgeInsets.all(8.0),
-              text: "Connect With Google",
-              onPressed: () {},
-            ),
+                buttonType: ButtonType.googleDark,
+                btnColor: Colors.blue,
+                btnText: 'Connect With Google',
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)),
+                onPressed: () {
+                  print('Google sign in click');
+                }),
           ),
           SizedBox(
-            height: 130,
+            height: 40,
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, route.registration),
-            child: const Text(
-              "Don't Have An account?",
-              style: TextStyle(color: Colors.white, fontSize: 15),
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Don't Have An Account?",
+                  style: TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontSize: 16.0,
+                      fontFamily: "WorkSansMedium"),
+                ),
+                GestureDetector(
+                  child: const Text(' Sign up here',
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 255, 10, 10),
+                          fontSize: 16.0)),
+                  onTap: () => Navigator.pushNamed(context, route.registration),
+                )
+              ],
             ),
-            style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            )),
-          )
+          ),
         ],
       )),
-    );
-  }
-}
-
-class SignInButt extends StatelessWidget {
-  const SignInButt({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 35,
-      width: 230,
-      decoration: new BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-        color: Color.fromARGB(255, 235, 24, 24),
-      ),
-      child: MaterialButton(
-          highlightColor: Colors.transparent,
-          splashColor: Color.fromARGB(255, 238, 134, 134),
-          //shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0))),
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 42.0),
-            child: Text(
-              "Sign In",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15.0,
-                  fontFamily: "WorkSansBold"),
-            ),
-          ),
-          onPressed: () => {}),
     );
   }
 }

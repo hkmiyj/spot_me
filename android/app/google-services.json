@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "232282360593",
+    "project_id": "spotme-0001",
+    "storage_bucket": "spotme-0001.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:232282360593:android:c8bbb0f16c37d3965f1ab0",
+        "android_client_info": {
+          "package_name": "com.mydomain.spot_me"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "232282360593-vv2g7j11uhnbu129gjjcjc7i42li7g6i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUmreXAIVSFRaguTgXZeb7oBT7J9K6EqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "232282360593-vv2g7j11uhnbu129gjjcjc7i42li7g6i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
