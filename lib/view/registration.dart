@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:spot_me/route/route.dart' as route;
 import 'package:spot_me/service/firebase_authentication.dart';
 
