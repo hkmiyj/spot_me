@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sign_button/sign_button.dart';
 import 'package:spot_me/route/route.dart' as route;
 import 'package:spot_me/service/firebase_authentication.dart';
+import 'package:spot_me/view/registration.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,11 +18,12 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
 
   void loginUser() {
-    FirebaseAuthMethods(FirebaseAuth.instance).loginWithEmail(
-      email: emailController.text,
-      password: passwordController.text,
-      context: context,
-    );
+    // FirebaseAuthMethods(FirebaseAuth.instance).loginWithEmail
+    context.read<FirebaseAuthMethods>().loginWithEmail(
+          email: emailController.text,
+          password: passwordController.text,
+          context: context,
+        );
   }
 
   @override
@@ -96,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
           ElevatedButton(
             onPressed: loginUser,
             style: ElevatedButton.styleFrom(
-              primary: Colors.red, // Background color
+              backgroundColor: Colors.red, // Background color
             ),
             child: Padding(
               padding:
@@ -192,7 +195,13 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                           color: Color.fromARGB(255, 255, 10, 10),
                           fontSize: 16.0)),
-                  onTap: () => Navigator.pushNamed(context, route.registration),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const registrationPage()),
+                    );
+                  },
                 )
               ],
             ),

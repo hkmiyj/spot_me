@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:provider/provider.dart';
 import 'package:spot_me/route/route.dart' as route;
+
+import '../service/firebase_authentication.dart';
 
 class discoverPage extends StatefulWidget {
   const discoverPage({Key? key}) : super(key: key);
@@ -14,6 +18,7 @@ class discoverPage extends StatefulWidget {
 class _discoverPageState extends State<discoverPage> {
   @override
   Widget build(BuildContext context) {
+    final user = context.read<FirebaseAuthMethods>().user;
     return Scaffold(
         body: Center(
       child: Container(
@@ -26,25 +31,28 @@ class _discoverPageState extends State<discoverPage> {
               child: Center(
                 child: Container(
                     child: Text("DISCOVER",
-                              style: TextStyle(
-                                  fontSize: 50, color: Colors.black))),
+                        style: TextStyle(fontSize: 50, color: Colors.black))),
               ),
             ),
             Container(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget> [
-                Text("Welcome USER",
-                              style: TextStyle(
-                                  fontSize: 20, color: Colors.black)),
-                ElevatedButton(onPressed: () => Navigator.pushNamed(context, route.login), child: Text(
-              "Sign Out",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15.0,
-                  fontFamily: "WorkSansBold"),
-            ))
-              ]),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(user.email!,
+                        style: TextStyle(fontSize: 20, color: Colors.black)),
+                    ElevatedButton(
+                        onPressed: () {
+                          FirebaseAuthMethods(FirebaseAuth.instance)
+                              .signOut(context);
+                        },
+                        child: Text(
+                          "Sign Out",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15.0,
+                              fontFamily: "WorkSansBold"),
+                        ))
+                  ]),
             ),
             Flexible(
               flex: 1,

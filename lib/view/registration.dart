@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:spot_me/route/route.dart' as route;
 import 'package:spot_me/service/firebase_authentication.dart';
 
@@ -15,11 +16,11 @@ class _registrationPageState extends State<registrationPage> {
   final TextEditingController passwordController = TextEditingController();
 
   void signUpUser() async {
-    FirebaseAuthMethods(FirebaseAuth.instance).signUpWithEmail(
-      email: emailController.text,
-      password: passwordController.text,
-      context: context,
-    );
+    context.read<FirebaseAuthMethods>().signUpWithEmail(
+          email: emailController.text,
+          password: passwordController.text,
+          context: context,
+        );
     /*context.read<FirebaseAuthMethods>().signUpWithEmail(
           email: emailController.text,
           password: passwordController.text,
@@ -36,11 +37,7 @@ class _registrationPageState extends State<registrationPage> {
           centerTitle: true,
           title: const Text("Create Account"),
         ),
-        body: Container(
-          padding: EdgeInsets.only(left: 20, right: 20, top: 35, bottom: 30),
-          width: double.infinity,
-          height: double.infinity,
-          color: Colors.white70,
+        body: SingleChildScrollView(
           child: Column(children: [
             Padding(
               padding: const EdgeInsets.only(top: 60.0),

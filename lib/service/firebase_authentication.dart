@@ -7,6 +7,13 @@ class FirebaseAuthMethods {
   final FirebaseAuth _auth;
   FirebaseAuthMethods(this._auth);
 
+  User get user => _auth.currentUser!;
+
+// STATE PERSISTENCE
+  Stream<User?> get authState => FirebaseAuth.instance.authStateChanges();
+  // Stream get authStateChange => FirebaseAuth.instance.userChanges();
+  // Stream get authStateTokenChange => FirebaseAuth.instance.idTokenChanges();
+
 // SIGN UP EMAIL AND PASSWORD
   Future<void> signUpWithEmail({
     required String email,
@@ -18,8 +25,8 @@ class FirebaseAuthMethods {
         email: email,
         password: password,
       );
-      Navigator.pushNamed(context, route.login);
-      showSnackBar(context, "Register Successfull !");
+      Navigator.pushNamed(context, route.home);
+      showSnackBar(context, "Register Successful");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
