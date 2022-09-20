@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // Define Routes
 import 'package:spot_me/view/login.dart';
 import 'package:spot_me/view/registration.dart';
-import 'package:spot_me/view/home.dart';
+import 'package:spot_me/view/homeBar.dart';
 
 // Route Names
 const String login = 'login';

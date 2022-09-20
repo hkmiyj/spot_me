@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../utils/showSnackBar.dart';
@@ -18,6 +19,7 @@ class FirebaseAuthMethods {
   Future<void> signUpWithEmail({
     required String email,
     required String password,
+    required String username,
     required BuildContext context,
   }) async {
     try {
@@ -38,7 +40,7 @@ class FirebaseAuthMethods {
     }
   }
 
-  // EMAIL LOGIN
+  // SIGN IN EMAIL AND PASSWORD
   Future<void> loginWithEmail({
     required String email,
     required String password,
@@ -55,6 +57,7 @@ class FirebaseAuthMethods {
     }
   }
 
+  // SIGN UP GMAIL
   // SIGN OUT
   Future<void> signOut(BuildContext context) async {
     try {

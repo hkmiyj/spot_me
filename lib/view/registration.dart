@@ -12,13 +12,15 @@ class registrationPage extends StatefulWidget {
 }
 
 class _registrationPageState extends State<registrationPage> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
 
   void signUpUser() async {
     context.read<FirebaseAuthMethods>().signUpWithEmail(
-          email: emailController.text,
-          password: passwordController.text,
+          username: _passwordController.text,
+          email: _emailController.text,
+          password: _passwordController.text,
           context: context,
         );
     /*context.read<FirebaseAuthMethods>().signUpWithEmail(
@@ -48,12 +50,16 @@ class _registrationPageState extends State<registrationPage> {
                     child: Image.asset('asset/images/logo.png')),
               ),
             ),
-            Container(
+            Form(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: <Widget>[
-                    TextField(
+                    TextFormField(
+                      validator: (value) {
+                        return value!.isEmpty ? 'Please add an email' : null;
+                      },
+                      controller: _usernameController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(
                           Icons.account_circle_rounded,
@@ -62,12 +68,13 @@ class _registrationPageState extends State<registrationPage> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10.0)),
                         ),
-                        hintText: 'Username',
+                        labelText: 'Username',
+                        hintText: 'Johny20',
                       ),
                     ),
                     SizedBox(height: 10),
-                    TextField(
-                      controller: emailController,
+                    TextFormField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(
                           Icons.alternate_email,
@@ -76,12 +83,13 @@ class _registrationPageState extends State<registrationPage> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10.0)),
                         ),
-                        hintText: 'Email',
+                        labelText: 'Email',
+                        hintText: 'john@gmail.com',
                       ),
                     ),
                     SizedBox(height: 10),
-                    TextField(
-                      controller: passwordController,
+                    TextFormField(
+                      controller: _passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         prefixIcon: Icon(

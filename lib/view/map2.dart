@@ -17,13 +17,27 @@ class mapPg extends StatefulWidget {
 class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
   late MapController mapController;
   late LatLng position;
+  List<Marker> allMarkers = [];
+
+  late List<Widget> carouselItems;
 
   @override
   void initState() {
     super.initState();
-    position = LatLng(1, 1);
+    position = LatLng(2.271, 102.2876);
     position = getCurrentLatLngFromSharedPrefs();
     mapController = MapController();
+
+    /*for(int i = 0; i < coords.length; i++) {
+      allMarkers.add(
+        new Marker(
+          width: 80.0,
+          height: 80.0,
+          point: coords.values.elementAt(i),
+          builder: (ctx) => new Icon(Icons.night_shelter, color: Colors.red,),
+        )
+      );
+    }*/
   }
 
   void updateCurrentLocation() async {
@@ -67,54 +81,159 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
     controller.forward();
   }
 
+  rescueBottomSheet() {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      backgroundColor: Colors.white,
+      barrierColor: Colors.grey.withOpacity(0.1),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            const Text('KarJay'),
+            ElevatedButton(
+              child: const Text('Mark As Found'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  shelterBottomSheet() {
+    return showModalBottomSheet<dynamic>(
+      isScrollControlled: true,
+      context: context,
+      backgroundColor: Colors.white,
+      barrierColor: Colors.grey.withOpacity(0.1),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Image.network(
+                'https://images.unsplash.com/photo-1547721064-da6cfb341d50',
+                fit: BoxFit.cover,
+              ),
+            ),
+            const Text('PPS Melaka Hawau'),
+            ElevatedButton(
+              child: const Text('Go There'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              child: const Text('Call'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FlutterMap(
-        mapController: mapController,
-        options: MapOptions(
-          onMapCreated: _onMapController,
-          plugins: [
-            LocationMarkerPlugin(),
-          ],
-          center: position,
-          zoom: 6.8,
-          interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
-          maxZoom: 18,
-          //minZoom: 6.8,
-        ),
-        layers: [
-          TileLayerOptions(
-            urlTemplate:
-                "https://api.mapbox.com/styles/v1/damfud/cl7n4wktc001v16lnqcz7i2z8/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGFtZnVkIiwiYSI6ImNsN2s3dHNoMzBmOWIzb3F6OWkyMnM0ZWoifQ.N022hvg6-KtFSQ7NqetikQ",
-            additionalOptions: {"access_token": mapConfiguration().AccessToken},
-          ),
-          LocationMarkerLayerOptions(headingStream: Stream.empty()),
-          /*CircleLayerOptions(
-            circles: [],
-          ),
-          MarkerLayerOptions(
-            markers: [
-              Marker(
-                point: position,
-                width: 1,
-                height: 1,
-                builder: (context) => Icon(
-                  Icons.person,
-                  color: Colors.redAccent,
-                  size: 30,
-                ),
-              ),
+      body: Stack(children: <Widget>[
+        FlutterMap(
+          mapController: mapController,
+          options: MapOptions(
+            onMapCreated: _onMapController,
+            plugins: [
+              LocationMarkerPlugin(),
             ],
-          ),*/
-        ],
-        nonRotatedChildren: [],
-      ),
+            center: position,
+            zoom: 6.8,
+            interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+            maxZoom: 15,
+            minZoom: 6.8,
+          ),
+          layers: [
+            TileLayerOptions(
+              urlTemplate:
+                  "https://api.mapbox.com/styles/v1/damfud/cl7n4wktc001v16lnqcz7i2z8/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGFtZnVkIiwiYSI6ImNsN2s3dHNoMzBmOWIzb3F6OWkyMnM0ZWoifQ.N022hvg6-KtFSQ7NqetikQ",
+              additionalOptions: {
+                "access_token": mapConfiguration().AccessToken
+              },
+            ),
+            LocationMarkerLayerOptions(headingStream: Stream.empty()),
+            MarkerLayerOptions(
+              markers: [
+                Marker(
+                  point: LatLng(2.271, 102.2876),
+                  builder: (context) => IconButton(
+                    icon: Icon(Icons.night_shelter),
+                    onPressed: () {
+                      shelterBottomSheet();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+          nonRotatedChildren: [],
+        ),
+        Positioned(
+            bottom: 80,
+            right: 16,
+            child: FloatingActionButton(
+              child: Icon(Icons.home),
+              backgroundColor: Colors.red,
+              onPressed: () {
+                rescueBottomSheet();
+              },
+            )),
+      ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _animatedMapMove(position, 18);
         },
-        child: const Icon(Icons.my_location),
+        child: Icon(Icons.my_location),
+      ),
+    );
+  }
+}
+
+class mapCarousel extends StatefulWidget {
+  const mapCarousel({super.key});
+
+  @override
+  State<mapCarousel> createState() => _mapCarouselState();
+}
+
+class _mapCarouselState extends State<mapCarousel> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: Card(
+        color: Colors.white,
       ),
     );
   }
