@@ -5,10 +5,11 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import 'package:spot_me/route/route.dart' as route;
+import 'package:spot_me/service/twitter_apii.dart';
 import 'package:spot_me/view/help_page.dart';
 import 'package:spot_me/view/list.dart';
+import 'package:spot_me/view/locate.dart';
 import 'package:spot_me/view/shelter_page.dart';
-
 import '../service/firebase_authentication.dart';
 
 class discoverPage extends StatefulWidget {
@@ -25,55 +26,67 @@ class _discoverPageState extends State<discoverPage> {
     final user = context.read<FirebaseAuthMethods>().user;
     return Scaffold(
         appBar: AppBar(
-          title: const Text('SpotMe'),
-          centerTitle: true,
-          backgroundColor: Colors.red,
+          title: Text("SpotMe",
+              style: TextStyle(fontSize: 30, color: Colors.white)),
           actions: [
             IconButton(
-              icon: Icon(
-                Icons.logout,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.logout),
+              tooltip: 'LogOut ',
               onPressed: () {
                 FirebaseAuthMethods(FirebaseAuth.instance).signOut(context);
               },
             ),
           ],
         ),
-        body: SafeArea(
-          child: Container(
-              child: Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Column(
-              children: <Widget>[
-                SizedBox(),
-                Container(
-                  child: Row(children: <Widget>[
-                    Text("Hello " + user.email!,
-                        style: TextStyle(fontSize: 20, color: Colors.black)),
-                  ]),
+        body: Container(
+            child: Padding(
+          padding: const EdgeInsets.all(14.0),
+          child: Column(
+            children: <Widget>[
+              SizedBox(),
+              Container(
+                width: 500.0,
+                height: 100.0,
+                decoration: BoxDecoration(
+                  color: Colors.red,
                 ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 16.0),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey,
-                            blurRadius: 15.0,
-                            offset: Offset(0, 15))
-                      ]),
-                  height: 90,
-                  child: Center(
-                    child: Row(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.account_circle,
+                        color: Colors.white,
+                        size: 50.0,
+                      ),
+                      Container(
+                        child: Text(user.displayName!,
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                    ]),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                  color: Colors.white,
+                ),
+                child: Center(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
+                          children: [
                             IconButton(
-                              icon: Icon(Icons
-                                  .handshake), //Image.asset('assets/icons/wallet.png'),
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -81,61 +94,49 @@ class _discoverPageState extends State<discoverPage> {
                                       builder: (context) => const helpForm()),
                                 );
                               },
-                            ),
-                            Text(
-                              'Help',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                        SizedBox(width: iconwidth),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            IconButton(
-                              icon: Icon(Icons
-                                  .add_location_sharp), //Image.asset('assets/icons/wallet.png'),
-                              onPressed: () {},
-                            ),
-                            Text(
-                              'Rescue',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                        SizedBox(width: iconwidth),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            IconButton(
-                              icon: Icon(
-                                Icons.home,
+                              icon: const Icon(
+                                Icons.handshake,
                                 color: Colors.red,
-                              ), //Image.asset('assets/icons/wallet.png'),
+                                size: 35,
+                              ),
+                            ),
+                            Text(
+                              'Ask Help',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            IconButton(
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const shelterList()),
+                                      builder: (context) => const locatePage()),
                                 );
                               },
+                              icon: const Icon(
+                                Icons.add_location_sharp,
+                                color: Colors.red,
+                                size: 35,
+                              ),
                             ),
                             Text(
-                              'Find Shelter',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              'Locate Victim',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(
+                              height: 10,
                             )
                           ],
                         ),
-                        SizedBox(width: iconwidth),
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
+                          children: [
                             IconButton(
-                              icon: Icon(
-                                Icons.home_work,
-                                color: Colors.red,
-                              ), //Image.asset('assets/icons/wallet.png'),
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -144,72 +145,73 @@ class _discoverPageState extends State<discoverPage> {
                                           const shelter_page()),
                                 );
                               },
+                              icon: const Icon(
+                                Icons.other_houses_rounded,
+                                color: Colors.red,
+                                size: 35,
+                              ),
                             ),
                             Text(
-                              'Open Shelter',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              'Add Shelter',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(
+                              height: 10,
                             )
                           ],
                         ),
-                      ],
-                      mainAxisAlignment: MainAxisAlignment.center,
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    Container(
-                      width: 175,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.red,
-                      ),
-                      child: Center(
-                          child: Text(
-                        "Shelter Status",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const shelterList()),
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.house_siding,
+                                color: Colors.red,
+                                size: 35,
+                              ),
+                            ),
+                            Text(
+                              'Find Shelter',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            )
+                          ],
                         ),
-                      )),
-                    ),
-                    SizedBox(width: 5),
-                    Container(
-                      width: 175,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
+                      ]),
                 ),
-                SizedBox(height: 5),
-                Row(
-                  children: [
-                    Container(
-                      width: 175,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.red,
-                      ),
-                    ),
-                    SizedBox(width: 5),
-                    Container(
-                      width: 175,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
+              ),
+              SizedBox(height: 5),
+              Text(
+                "News",
+                style: TextStyle(
+                  color: Colors.grey,
                 ),
-              ],
-            ),
-          )),
-        ));
+              ),
+              Flexible(
+                flex: 1,
+                child: FutureBuilder(
+                  future: twitterApi().getTwitNews(),
+                  builder: (BuildContext context, AsyncSnapshot tweetPost) {
+                    if (tweetPost.hasData) {
+                      return tweetPost.data;
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  },
+                ),
+              )
+            ],
+          ),
+        )));
   }
 }

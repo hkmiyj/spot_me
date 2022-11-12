@@ -42,40 +42,43 @@ class _LoginPageState extends State<LoginPage> {
                   child: Image.asset('asset/images/logo.png')),
             ),
           ),
-          Padding(
-            padding:
-                EdgeInsets.only(left: 15.0, right: 15.0, top: 10, bottom: 0),
-            child: TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                prefixIcon: Icon(
-                  Icons.account_circle_rounded,
-                  color: Color(0xFF666666),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                ),
-                labelText: 'Email',
-                hintText: '',
-              ),
-            ),
-          ),
-          Padding(
+          Container(
             padding:
                 EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
-            child: TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                  prefixIcon: const Icon(
-                    Icons.lock_outline,
-                    color: Color(0xFF666666),
+            child: Column(
+              children: [
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Icons.account_circle_rounded,
+                      color: Color(0xFF666666),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    labelText: 'Email',
+                    hintText: '',
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  labelText: 'Password',
-                  hintText: ''),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: Color(0xFF666666),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      labelText: 'Password',
+                      hintText: ''),
+                ),
+              ],
             ),
           ),
           SizedBox(

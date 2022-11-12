@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,14 +7,17 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot_me/model/shelter.dart';
 import 'package:spot_me/service/firebase_authentication.dart';
+import 'package:spot_me/service/location.dart';
 import 'package:spot_me/view/login.dart';
 import 'package:spot_me/view/homeBar.dart';
-import 'package:spot_me/view/shelter_page.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:spot_me/service/map_configuration.dart';
+
+import 'model/userLocation.dart';
 //import 'package:spot_me/view/login.dart';
 // scrcpy
+// scrcpy --turn-screen-off
 
 late SharedPreferences sharedPreferences;
 
@@ -33,13 +38,16 @@ class MyApp extends StatelessWidget {
         FirebaseFirestore.instance.collection('shelters');
     final _shelter = _shelterCollection.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
-        return Shelter.fromMap(doc.data());
+        return Shelter.fromDocument(doc);
       }).toList();
     });
     mapConfiguration().UserLocation();
 
     return MultiProvider(
       providers: [
+        StreamProvider<UserLocation>(
+            create: (context) => LocationService().locationStream,
+            initialData: UserLocation(latitude: 1, longitude: 2)),
         StreamProvider<List<Shelter>>(
           create: (context) => _shelter,
           initialData: [],

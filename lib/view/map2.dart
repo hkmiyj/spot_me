@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
+import 'package:spot_me/model/shelter.dart';
 import 'package:spot_me/service/map_configuration.dart';
 import 'package:spot_me/utils/shared_pref.dart';
+
+import '../utils/const.dart';
 
 class mapPg extends StatefulWidget {
   const mapPg({super.key});
@@ -17,7 +22,7 @@ class mapPg extends StatefulWidget {
 class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
   late MapController mapController;
   late LatLng position;
-  List<Marker> allMarkers = [];
+  List<Marker> markers = [];
 
   late List<Widget> carouselItems;
 
@@ -27,17 +32,20 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
     position = LatLng(2.271, 102.2876);
     position = getCurrentLatLngFromSharedPrefs();
     mapController = MapController();
+  }
 
-    /*for(int i = 0; i < coords.length; i++) {
-      allMarkers.add(
-        new Marker(
-          width: 80.0,
-          height: 80.0,
-          point: coords.values.elementAt(i),
-          builder: (ctx) => new Icon(Icons.night_shelter, color: Colors.red,),
-        )
-      );
-    }*/
+  void _addMarker() {
+    final _shelters = Provider.of<List<Shelter>>(context);
+    for (var shelter in _shelters)
+      markers.add(new Marker(
+        height: 30,
+        width: 30,
+        point: LatLng(shelter.location.latitude, shelter.location.longitude),
+        builder: (ctx) => new Icon(
+          Icons.night_shelter,
+          color: Colors.red,
+        ),
+      ));
   }
 
   void updateCurrentLocation() async {
@@ -159,42 +167,50 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    _addMarker();
+    final _shelters = Provider.of<List<Shelter>>(context);
     return Scaffold(
       body: Stack(children: <Widget>[
         FlutterMap(
           mapController: mapController,
           options: MapOptions(
-            onMapCreated: _onMapController,
-            plugins: [
-              LocationMarkerPlugin(),
-            ],
-            center: position,
-            zoom: 6.8,
-            interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
-            maxZoom: 15,
-            minZoom: 6.8,
-          ),
+              maxBounds: LatLngBounds(
+                LatLng(-90, -180.0),
+                LatLng(90.0, 180.0),
+              ),
+              onMapCreated: _onMapController,
+              plugins: [LocationMarkerPlugin(), MarkerClusterPlugin()],
+              center: position,
+              zoom: 6.8,
+              interactiveFlags:
+                  InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+              maxZoom: 15,
+              minZoom: 1 //6.8,
+              ),
           layers: [
             TileLayerOptions(
               urlTemplate:
                   "https://api.mapbox.com/styles/v1/damfud/cl7n4wktc001v16lnqcz7i2z8/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGFtZnVkIiwiYSI6ImNsN2s3dHNoMzBmOWIzb3F6OWkyMnM0ZWoifQ.N022hvg6-KtFSQ7NqetikQ",
-              additionalOptions: {
-                "access_token": mapConfiguration().AccessToken
-              },
+              additionalOptions: {"access_token": mapPk_AccessToken},
             ),
             LocationMarkerLayerOptions(headingStream: Stream.empty()),
-            MarkerLayerOptions(
-              markers: [
-                Marker(
-                  point: LatLng(2.271, 102.2876),
-                  builder: (context) => IconButton(
-                    icon: Icon(Icons.night_shelter),
-                    onPressed: () {
-                      shelterBottomSheet();
-                    },
-                  ),
-                ),
-              ],
+            MarkerClusterLayerOptions(
+              maxClusterRadius: 100,
+              size: Size(40, 40),
+              fitBoundsOptions: FitBoundsOptions(
+                padding: EdgeInsets.all(50),
+              ),
+              markers: markers,
+              polygonOptions: PolygonOptions(
+                  borderColor: Colors.blueAccent,
+                  color: Colors.black12,
+                  borderStrokeWidth: 3),
+              builder: (context, markers) {
+                return FloatingActionButton(
+                  child: Icon(Icons.home), //Text(markers.length.toString()),
+                  onPressed: null,
+                );
+              },
             ),
           ],
           nonRotatedChildren: [],

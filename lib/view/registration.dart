@@ -14,7 +14,14 @@ class registrationPage extends StatefulWidget {
 class _registrationPageState extends State<registrationPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
+
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   void signUpUser() async {
     context.read<FirebaseAuthMethods>().signUpWithEmail(
@@ -23,12 +30,7 @@ class _registrationPageState extends State<registrationPage> {
           password: _passwordController.text,
           context: context,
         );
-    /*context.read<FirebaseAuthMethods>().signUpWithEmail(
-          email: emailController.text,
-          password: passwordController.text,
-          context: context,
-        );
-        */
+    Navigator.pushNamed(context, secondStep());
   }
 
   @override
@@ -50,62 +52,7 @@ class _registrationPageState extends State<registrationPage> {
                     child: Image.asset('asset/images/logo.png')),
               ),
             ),
-            Form(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: <Widget>[
-                    TextFormField(
-                      validator: (value) {
-                        return value!.isEmpty ? 'Please add an email' : null;
-                      },
-                      controller: _usernameController,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.account_circle_rounded,
-                          color: Color(0xFF666666),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        ),
-                        labelText: 'Username',
-                        hintText: 'Johny20',
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.alternate_email,
-                          color: Color(0xFF666666),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        ),
-                        labelText: 'Email',
-                        hintText: 'john@gmail.com',
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.lock_outline,
-                          color: Color(0xFF666666),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        ),
-                        hintText: 'Password',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            Form(child: firstStep()),
             SizedBox(height: 10),
             Container(
               height: 35,
@@ -123,7 +70,7 @@ class _registrationPageState extends State<registrationPage> {
                   padding: const EdgeInsets.symmetric(
                       vertical: 10.0, horizontal: 42.0),
                   child: Text(
-                    "Sign Up",
+                    "Next",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 15.0,
@@ -135,18 +82,81 @@ class _registrationPageState extends State<registrationPage> {
           ]),
         ));
   }
-}
 
-class registerSuccess extends StatefulWidget {
-  const registerSuccess({Key? key}) : super(key: key);
+  firstStep() {
+    return Container(
+      height: 300,
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: <Widget>[
+          TextFormField(
+            controller: _emailController,
+            decoration: InputDecoration(
+              prefixIcon: Icon(
+                Icons.alternate_email,
+                color: Color(0xFF666666),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ),
+              labelText: 'Email',
+              hintText: 'john@gmail.com',
+            ),
+          ),
+          SizedBox(height: 10),
+          TextFormField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              prefixIcon: Icon(
+                Icons.lock_outline,
+                color: Color(0xFF666666),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ),
+              hintText: 'Password',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  @override
-  State<registerSuccess> createState() => _registerSuccessState();
-}
-
-class _registerSuccessState extends State<registerSuccess> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
+  secondStep() {
+    return Container(
+      child: Form(
+        child: Column(
+          children: [
+            TextFormField(
+              decoration: InputDecoration(
+                prefixIcon: Icon(
+                  Icons.alternate_email,
+                  color: Color(0xFF666666),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                ),
+                labelText: 'Your Name',
+                hintText: 'john@gmail.com',
+              ),
+            ),
+            TextFormField(
+              decoration: InputDecoration(
+                prefixIcon: Icon(
+                  Icons.alternate_email,
+                  color: Color(0xFF666666),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                ),
+                labelText: 'Phone Number',
+                hintText: '0126555980',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -1,7 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
+import 'package:spot_me/service/firebase_authentication.dart';
+import 'package:spot_me/service/location.dart';
+import '../model/userLocation.dart';
+import '../widget/showSnackBar.dart';
+import 'package:geolocator/geolocator.dart';
 
 class shelter_page extends StatefulWidget {
   const shelter_page({super.key});
@@ -13,15 +20,16 @@ class shelter_page extends StatefulWidget {
 class _shelter_pageState extends State<shelter_page> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _shelterName = TextEditingController();
-  final TextEditingController _latitude = TextEditingController();
-  final TextEditingController _longitude = TextEditingController();
+  final TextEditingController _location = TextEditingController();
   final TextEditingController _phoneNumber = TextEditingController();
   final TextEditingController _description = TextEditingController();
+  late double _latitude;
+  late double _longitude;
   final List<String> benefit = [];
-  final TextEditingController _location = TextEditingController();
   bool _isMeals = false;
   bool _isClothing = false;
   bool _isMedicine = false;
+  String _output = '';
 
   List<CheckBoxListTileModel> checkBoxListTileModel =
       CheckBoxListTileModel.getUsers();
@@ -52,8 +60,6 @@ class _shelter_pageState extends State<shelter_page> {
       onPressed: () {
         setState(() {
           _shelterName.clear();
-          _latitude.clear();
-          _longitude.clear();
           _phoneNumber.clear();
           _description.clear();
           _isMeals = false;
@@ -93,21 +99,22 @@ class _shelter_pageState extends State<shelter_page> {
     Widget continueButton = TextButton(
       child: Text("YES"),
       onPressed: () {
-        // Validate returns true if the form is valid, or false otherwise.
+        final userid = context.read<FirebaseAuthMethods>().user.uid;
         if (_formKey.currentState!.validate()) {
           FirebaseFirestore.instance.collection("shelters").add({
+            'userid': userid,
             'name': _shelterName.text,
             'phone': _phoneNumber.text,
             'description': _description.text,
             'benefit': benefit,
-            'status': false,
-            'location': GeoPoint(1, 2),
+            'status': true,
+            'address': true,
+            'location': GeoPoint(_latitude, _longitude),
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Processing Data')),
-          );
+          showSuccessSnackBar(context, "Successfully Add Shelter");
+          Navigator.pop(context);
+          Navigator.pop(context);
         }
-        Navigator.pop(context);
       },
     );
 
@@ -130,18 +137,22 @@ class _shelter_pageState extends State<shelter_page> {
 
   @override
   Widget build(BuildContext context) {
+    var userLocation = Provider.of<UserLocation>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register Your Shelter'),
+        title: Text('Register Shelter'),
         centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(15.0),
             child: Form(
                 key: _formKey,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     TextFormField(
                       controller: _shelterName,
@@ -159,19 +170,57 @@ class _shelter_pageState extends State<shelter_page> {
                       },
                     ),
                     spaceBox(),
-                    TextFormField(
-                      controller: _location,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Address',
-                      ),
-                      // The validator receives the text that the user has entered.
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your shelter location';
-                        }
-                        return null;
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: TextFormField(
+                            controller: _location,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              label: Text('Address'),
+                              hintText: 'Address',
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your shelter name';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Container(
+                          height: 55,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: Color.fromARGB(255, 161, 161, 161),
+                            ),
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.my_location,
+                              color: Color.fromARGB(255, 99, 99, 99),
+                            ),
+                            onPressed: () async {
+                              final address = await getCoordinateToAddress(
+                                  userLocation.latitude,
+                                  userLocation.longitude);
+
+                              setState(() {
+                                _latitude = userLocation.latitude;
+                                _longitude = userLocation.longitude;
+                                print(_latitude);
+                                print(_longitude);
+                                _location.text = address;
+                              });
+                            },
+                          ),
+                        )
+                      ],
                     ),
                     spaceBox(),
                     TextFormField(
@@ -195,7 +244,7 @@ class _shelter_pageState extends State<shelter_page> {
                     spaceBox(),
                     TextFormField(
                       controller: _description,
-                      keyboardType: TextInputType.multiline,
+
                       minLines: 1, //Normal textInputField will be displayed
                       maxLines: 5,
                       decoration: InputDecoration(

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:spot_me/view/list.dart';
-import 'package:spot_me/view/map.dart';
 import "package:spot_me/view/discover.dart";
 
 import 'map2.dart';
@@ -17,8 +15,8 @@ class _homepageState extends State<homepage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     discoverPage(),
-    //shelterList(),
     mapPg(),
+    //shelterList(),
     //map(),
   ];
 
