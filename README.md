@@ -69,35 +69,35 @@ This section should list any major frameworks/libraries used to bootstrap your p
   <td style="text-align: center, width: 180">
     
         
-Login Screen
+<div align="center"> Login Screen </div>
    
-<img width="180" alt="BMW" src="https://user-images.githubusercontent.com/1295961/160239273-ce881c0c-c3de-4953-9448-dfd12d7ffe30.png">
+<img width="180" alt="BMW" src="assetReadme/screenshot/login.jpg">
     </a>
 
   </td>
    <td style="text-align: center, width: 180">
     
         
-Registration Page
+<div align="center"> Map </div>
    
-<img width="180" alt="BMW" src="https://user-images.githubusercontent.com/1295961/160239273-ce881c0c-c3de-4953-9448-dfd12d7ffe30.png">
+<img width="180" alt="BMW" src="assetReadme/screenshot/map.jpg">
     </a>
 
   </td>
  <td style="text-align: center, width: 180">
             
-Map
+<div align="center"> Shelter Page </div>
    
-<img width="180" alt="BMW" src="https://user-images.githubusercontent.com/1295961/160239273-ce881c0c-c3de-4953-9448-dfd12d7ffe30.png">
+<img width="180" alt="BMW" src="assetReadme/screenshot/shelter.jpg">
     </a>
 
   </td>
   <td style="text-align: center, width: 180">
     
         
-Shelter Page
+<div align="center"> Shelter Register </div>
    
-<img width="180" alt="BMW" src="https://user-images.githubusercontent.com/1295961/160239273-ce881c0c-c3de-4953-9448-dfd12d7ffe30.png">
+<img width="180" alt="BMW" src="assetReadme/screenshot/shelterRegister.jpg">
     </a>
 
   </td>
