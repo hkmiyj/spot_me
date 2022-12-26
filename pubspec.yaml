@@ -46,6 +46,7 @@ dependencies:
   provider: ^6.0.3
   shared_preferences: ^2.0.15
   sign_button: ^2.0.2
+  simple_ripple_animation: ^0.0.3
   twitter_api_v2: ^4.0.2
   url_launcher: ^6.1.6
 

@@ -27,7 +27,12 @@ class _shelterListState extends State<shelterList> {
       userLocation.latitude,
       userLocation.longitude,
     );
-    return ((_distanceInMeters / 1000).toStringAsFixed(2));
+    double distanceDiff = _distanceInMeters / 1000;
+    if (_distanceInMeters > 1000) {
+      _distanceInMeters = _distanceInMeters / 1000;
+      return distanceDiff.toStringAsFixed(2) + " " + "Kilometer";
+    } else
+      return _distanceInMeters.toInt().toString() + " " + "Meter";
   }
 
   Future<String> address(LatLng coordinate) async {
@@ -113,9 +118,8 @@ class _shelterListState extends State<shelterList> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(calcDistance(LatLng(
-                                      shelter.location.latitude,
-                                      shelter.location.longitude)) +
-                                  " KM"),
+                                  shelter.location.latitude,
+                                  shelter.location.longitude))),
                               //Text(shelter.location.latitude.toString()),
                               //Text(shelter.location.longitude.toString()),
                               SizedBox(

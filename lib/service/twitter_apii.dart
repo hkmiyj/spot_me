@@ -43,7 +43,7 @@ class twitterApi {
       //DateTime? dateCreated = tweets.data.elementAt(0).createdAt;
       //twitterNews(profileImage,postImage,description);
       //print(tweets.includes);
-      print(tweets.includes!.media!.elementAt(1).key);
+      //print(tweets.includes!.media!.elementAt(1).key);
       return tweets;
 
       //postImage = tweets.includes!.media!.elementAt(0).url!;
@@ -59,6 +59,14 @@ class twitterApi {
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
       children: [
+        Center(
+          child: Text(
+            "News",
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          ),
+        ),
         for (var i = 0; i < 5; i++)
           Card(
             child: Column(

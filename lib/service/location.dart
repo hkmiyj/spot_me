@@ -46,13 +46,13 @@ class LocationService {
       desiredAccuracy: LocationAccuracy.high);
   return _position;
 }*/
-getCoordinateToAddress(lat, long) async {
+Future<String> getCoordinateToAddress(lat, long) async {
   List<geo.Placemark> p = await geo.placemarkFromCoordinates(lat, long);
   geo.Placemark place = p[0];
-  String address;
-
-  return address =
+  String address =
       "${place.name}, ${place.subLocality} ${place.locality}, ${place.administrativeArea} ${place.postalCode}, ${place.country}";
+
+  return address;
 }
 
 getAddresstoCoordinate(placemarks) async {

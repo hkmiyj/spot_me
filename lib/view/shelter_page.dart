@@ -143,175 +143,192 @@ class _shelter_pageState extends State<shelter_page> {
       appBar: AppBar(
         title: Text('Register Shelter'),
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.close_sharp,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              showAlertDialogCancel(context);
+            },
+          )
+        ],
       ),
-      body: SafeArea(
+      body: Center(
         child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(15.0),
-            child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    TextFormField(
-                      controller: _shelterName,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: Text('Name'),
-                        hintText: 'Your Shelter Name',
-                      ),
-                      // The validator receives the text that the user has entered.
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your shelter name';
-                        }
-                        return null;
-                      },
-                    ),
-                    spaceBox(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              child: Container(
+                padding: EdgeInsets.all(15.0),
+                child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Flexible(
-                          child: TextFormField(
-                            controller: _location,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              label: Text('Address'),
-                              hintText: 'Address',
+                        TextFormField(
+                          controller: _shelterName,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            label: Text('Name'),
+                            hintText: 'Your Shelter Name',
+                          ),
+                          // The validator receives the text that the user has entered.
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your shelter name';
+                            }
+                            return null;
+                          },
+                        ),
+                        spaceBox(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: TextFormField(
+                                controller: _location,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  label: Text('Address'),
+                                  hintText: 'Address',
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your shelter name';
+                                  }
+                                  return null;
+                                },
+                              ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your shelter name';
-                              }
-                              return null;
-                            },
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Container(
+                              height: 55,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(
+                                  color: Color.fromARGB(255, 161, 161, 161),
+                                ),
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.my_location,
+                                  color: Color.fromARGB(255, 99, 99, 99),
+                                ),
+                                onPressed: () async {
+                                  final address = await getCoordinateToAddress(
+                                      userLocation.latitude,
+                                      userLocation.longitude);
+
+                                  setState(() {
+                                    _latitude = userLocation.latitude;
+                                    _longitude = userLocation.longitude;
+                                    print(_latitude);
+                                    print(_longitude);
+                                    _location.text = address;
+                                  });
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                        spaceBox(),
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                          ],
+                          controller: _phoneNumber,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Phone Number',
+                          ),
+                          // The validator receives the text that the user has entered.
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                        spaceBox(),
+                        TextFormField(
+                          controller: _description,
+
+                          minLines: 1, //Normal textInputField will be displayed
+                          maxLines: 5,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Description',
                           ),
                         ),
                         SizedBox(
-                          width: 5,
+                          height: 20,
                         ),
                         Container(
-                          height: 55,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: Color.fromARGB(255, 161, 161, 161),
-                            ),
+                          child: Column(
+                            children: [
+                              Text("What Your Shelther Provide?"),
+                              CheckboxListTile(
+                                  title: Text('Meals'),
+                                  value: this._isMeals,
+                                  onChanged: (value) {
+                                    setState(() => _isMeals = value!);
+                                    value == true
+                                        ? benefit.add("Meals")
+                                        : benefit.remove("Meals");
+                                  }),
+                              CheckboxListTile(
+                                  title: Text('Clothing'),
+                                  value: this._isClothing,
+                                  onChanged: (value) {
+                                    setState(() => _isClothing = value!);
+                                    value == true
+                                        ? benefit.add("Clothing")
+                                        : benefit.remove("Clothing");
+                                  }),
+                              CheckboxListTile(
+                                  title: Text('Medicine'),
+                                  value: this._isMedicine,
+                                  onChanged: (value) {
+                                    setState(() => _isMedicine = value!);
+                                    value == true
+                                        ? benefit.add("Medicine")
+                                        : benefit.remove("Medicine");
+                                  })
+                            ],
                           ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.my_location,
-                              color: Color.fromARGB(255, 99, 99, 99),
+                        ),
+                        spaceBox(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                showAlertDialogSubmit(context);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 123.0),
+                                child: Text(
+                                  "Confirm",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15.0,
+                                      fontFamily: "WorkSansBold"),
+                                ),
+                              ),
                             ),
-                            onPressed: () async {
-                              final address = await getCoordinateToAddress(
-                                  userLocation.latitude,
-                                  userLocation.longitude);
-
-                              setState(() {
-                                _latitude = userLocation.latitude;
-                                _longitude = userLocation.longitude;
-                                print(_latitude);
-                                print(_longitude);
-                                _location.text = address;
-                              });
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                    spaceBox(),
-                    TextFormField(
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-                      ],
-                      controller: _phoneNumber,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Phone Number',
-                      ),
-                      // The validator receives the text that the user has entered.
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number';
-                        }
-                        return null;
-                      },
-                    ),
-                    spaceBox(),
-                    TextFormField(
-                      controller: _description,
-
-                      minLines: 1, //Normal textInputField will be displayed
-                      maxLines: 5,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Description',
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      child: Column(
-                        children: [
-                          Text("What Your Shelther Provide?"),
-                          CheckboxListTile(
-                              title: Text('Meals'),
-                              value: this._isMeals,
-                              onChanged: (value) {
-                                setState(() => _isMeals = value!);
-                                value == true
-                                    ? benefit.add("Meals")
-                                    : benefit.remove("Meals");
-                              }),
-                          CheckboxListTile(
-                              title: Text('Clothing'),
-                              value: this._isClothing,
-                              onChanged: (value) {
-                                setState(() => _isClothing = value!);
-                                value == true
-                                    ? benefit.add("Clothing")
-                                    : benefit.remove("Clothing");
-                              }),
-                          CheckboxListTile(
-                              title: Text('Medicine'),
-                              value: this._isMedicine,
-                              onChanged: (value) {
-                                setState(() => _isMedicine = value!);
-                                value == true
-                                    ? benefit.add("Medicine")
-                                    : benefit.remove("Medicine");
-                              })
-                        ],
-                      ),
-                    ),
-                    spaceBox(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            showAlertDialogSubmit(context);
-                          },
-                          child: const Text('Submit'),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            showAlertDialogCancel(context);
-                          },
-                          child: const Text('Cancel'),
+                          ],
                         ),
                       ],
-                    ),
-                  ],
-                )),
+                    )),
+              ),
+            ),
           ),
         ),
       ),

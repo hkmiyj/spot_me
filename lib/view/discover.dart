@@ -1,13 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
-import 'package:spot_me/route/route.dart' as route;
 import 'package:spot_me/service/twitter_apii.dart';
 import 'package:spot_me/view/help_page.dart';
-import 'package:spot_me/view/list.dart';
+import 'package:spot_me/view/shelter_list.dart';
 import 'package:spot_me/view/locate.dart';
 import 'package:spot_me/view/shelter_page.dart';
 import '../service/firebase_authentication.dart';
@@ -59,7 +55,7 @@ class _discoverPageState extends State<discoverPage> {
                         size: 50.0,
                       ),
                       Container(
-                        child: Text(user.displayName!,
+                        child: Text("Welcome " + user.displayName!,
                             style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.white,
@@ -191,12 +187,6 @@ class _discoverPageState extends State<discoverPage> {
                 ),
               ),
               SizedBox(height: 5),
-              Text(
-                "News",
-                style: TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
               Flexible(
                 flex: 1,
                 child: FutureBuilder(
@@ -205,7 +195,9 @@ class _discoverPageState extends State<discoverPage> {
                     if (tweetPost.hasData) {
                       return tweetPost.data;
                     } else {
-                      return CircularProgressIndicator();
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
                     }
                   },
                 ),

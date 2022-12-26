@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:spot_me/view/discover.dart";
+import 'package:spot_me/view/userPanel.dart';
 
 import 'map2.dart';
 
@@ -15,8 +16,8 @@ class _homepageState extends State<homepage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     discoverPage(),
+    userPanel(),
     mapPg(),
-    //shelterList(),
     //map(),
   ];
 
@@ -57,6 +58,26 @@ class _homepageState extends State<homepage> {
             ),
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.supervised_user_circle),
+            label: '',
+            activeIcon: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                      color:
+                          Color.fromARGB(255, 255, 255, 255).withOpacity(0.3),
+                      offset: Offset(0, 4),
+                      blurRadius: 20),
+                ],
+              ),
+              child: Icon(
+                Icons.supervised_user_circle,
+                color: Color.fromARGB(255, 255, 0, 0),
+              ),
+            ),
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.map_sharp),
             label: '',
             activeIcon: Container(
@@ -80,6 +101,10 @@ class _homepageState extends State<homepage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
+
+      // Here's the new attribute:
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

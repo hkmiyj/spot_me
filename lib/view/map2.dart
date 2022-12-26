@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:spot_me/model/shelter.dart';
+import 'package:spot_me/model/victims.dart';
 import 'package:spot_me/service/map_configuration.dart';
 import 'package:spot_me/utils/shared_pref.dart';
 
@@ -22,7 +23,8 @@ class mapPg extends StatefulWidget {
 class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
   late MapController mapController;
   late LatLng position;
-  List<Marker> markers = [];
+  List<Marker> markerShelter = [];
+  List<Marker> markerVictim = [];
 
   late List<Widget> carouselItems;
 
@@ -36,8 +38,21 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
 
   void _addMarker() {
     final _shelters = Provider.of<List<Shelter>>(context);
+    final _victim = Provider.of<List<Victim>>(context);
+
+    for (var victim in _victim)
+      markerVictim.add(new Marker(
+        height: 30,
+        width: 30,
+        point: LatLng(victim.location.latitude, victim.location.longitude),
+        builder: (ctx) => new Icon(
+          Icons.error,
+          color: Colors.red,
+        ),
+      ));
+
     for (var shelter in _shelters)
-      markers.add(new Marker(
+      markerShelter.add(new Marker(
         height: 30,
         width: 30,
         point: LatLng(shelter.location.latitude, shelter.location.longitude),
@@ -200,7 +215,26 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
               fitBoundsOptions: FitBoundsOptions(
                 padding: EdgeInsets.all(50),
               ),
-              markers: markers,
+              markers: markerVictim,
+              polygonOptions: PolygonOptions(
+                  borderColor: Colors.blueAccent,
+                  color: Colors.black12,
+                  borderStrokeWidth: 3),
+              builder: (context, markers) {
+                return FloatingActionButton(
+                  child: Icon(
+                      Icons.error_outline), //Text(markers.length.toString()),
+                  onPressed: null,
+                );
+              },
+            ),
+            MarkerClusterLayerOptions(
+              maxClusterRadius: 100,
+              size: Size(40, 40),
+              fitBoundsOptions: FitBoundsOptions(
+                padding: EdgeInsets.all(50),
+              ),
+              markers: markerShelter,
               polygonOptions: PolygonOptions(
                   borderColor: Colors.blueAccent,
                   color: Colors.black12,

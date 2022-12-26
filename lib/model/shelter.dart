@@ -6,7 +6,7 @@ class Shelter {
   final GeoPoint location;
   final String phone;
   final String description;
-  final bool status;
+  late final bool status;
   final List<dynamic> benefit;
 
   Shelter({
