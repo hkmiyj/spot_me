@@ -1,5 +1,19 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a name="readme-top"></a>
+<<<<<<< HEAD
+=======
+<!--
+*** Thanks for checking out the Best-README-Template. If you have a suggestion
+*** that would make this better, please fork the repo and create a pull request
+*** or simply open an issue with the tag "enhancement".
+*** Don't forget to give the project a star!
+*** Thanks again! Now go create something AMAZING! :D
+-->
+
+
+
+<!-- PROJECT SHIELDS -->
+>>>>>>> 6060adde28aa70286c753593b86d106b7611a25e
 
 
 
@@ -23,15 +37,28 @@
       <a href="#about-the-project">About The Project</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
+<<<<<<< HEAD
         <li><a href="#screenshot">Screenshot</a></li>
+=======
+>>>>>>> 6060adde28aa70286c753593b86d106b7611a25e
       </ul>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
+<<<<<<< HEAD
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+=======
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+>>>>>>> 6060adde28aa70286c753593b86d106b7611a25e
     <li><a href="#license">License</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -45,7 +72,11 @@
 
 I build this mobile application based on flutter framework and firebase as its database. This project is for my final year project.
 
+<<<<<<< HEAD
 Objective of this Project:
+=======
+Objective Of this Project:
+>>>>>>> 6060adde28aa70286c753593b86d106b7611a25e
 * To develop a mobile application that can share locations to get an immediate response to rescue the flood victims.
 * To search and locate the nearest available temporary shelter.
 * To build an admin dashboard for the authority to update, control, and monitor the flood emergency response system.
@@ -63,6 +94,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<<<<<<< HEAD
 ### Screenshot
 
 <div style="text-align: center"><table><tr>
@@ -107,10 +139,17 @@ Shelter Page
 </tr></table></div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+=======
+
+>>>>>>> 6060adde28aa70286c753593b86d106b7611a25e
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
+<<<<<<< HEAD
+=======
+This is an example of how you may give instructions on setting up your project locally.
+>>>>>>> 6060adde28aa70286c753593b86d106b7611a25e
 To get a local copy up and running follow these simple example steps.
 
 ### Installation
@@ -122,6 +161,30 @@ A few resources to get you started if this is your first Flutter project:
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
+<<<<<<< HEAD
+=======
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
+
+
+<!-- ROADMAP -->
+## Roadmap
+
+- [x] Add Changelog
+- [x] Add back to top links
+- [ ] Add Additional Templates w/ Examples
+- [ ] Add "components" document to easily copy & paste sections of the readme
+- [ ] Multi-language Support
+    - [ ] Chinese
+    - [ ] Spanish
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+
+>>>>>>> 6060adde28aa70286c753593b86d106b7611a25e
 <!-- LICENSE -->
 ## License
 
@@ -130,16 +193,25 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 6060adde28aa70286c753593b86d106b7611a25e
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
 Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
 
 * [Flutter](https://pages.github.com)
+<<<<<<< HEAD
 * [Flutter Map](https://docs.fleaflet.dev/)
 * [Twitter Api](https://developer.twitter.com/en/docs/twitter-api)
 * [Mapbox](https://www.mapbox.com/)
 * [Firebase](https://docs.flutter.dev/development/data-and-backend/firebase)
+=======
+* [GitHub Pages](https://pages.github.com)
+>>>>>>> 6060adde28aa70286c753593b86d106b7611a25e
 * [Font Awesome](https://fontawesome.com)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
