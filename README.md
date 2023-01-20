@@ -6,7 +6,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
+  <a href=#>
     <img src="asset/images/logo.png" alt="Logo" width="318" height="82">
   </a>
 
@@ -53,11 +53,7 @@ Objective of this Project:
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 ### Built With
-
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
 [![Flutter][Flutter.js]][Flutter-url] [![Firebase][Firebase.js]][Firebase-url]
 
@@ -72,6 +68,15 @@ This section should list any major frameworks/libraries used to bootstrap your p
 <div align="center"> Login Screen </div>
    
 <img width="180" alt="BMW" src="assetReadme/screenshot/login.jpg">
+    </a>
+
+  </td>
+  <td style="text-align: center, width: 180">
+    
+        
+<div align="center"> Home Screen </div>
+   
+<img width="180" alt="BMW" src="assetReadme/screenshot/home.jpg">
     </a>
 
   </td>
