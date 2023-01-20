@@ -1,12 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:spot_me/model/victims.dart';
 import 'package:spot_me/service/twitter_apii.dart';
-import 'package:spot_me/view/help_page.dart';
-import 'package:spot_me/view/shelter_list.dart';
-import 'package:spot_me/view/locate.dart';
-import 'package:spot_me/view/shelter_page.dart';
-import '../service/firebase_authentication.dart';
+import 'package:spot_me/view/bottomNav/map.dart';
+import 'package:spot_me/view/topNav/requestHelp.dart';
+import 'package:spot_me/view/topNav/shelter_list.dart';
+import 'package:spot_me/view/topNav/locate.dart';
+import 'package:spot_me/view/topNav/shelter_page.dart';
+import '../../service/firebase_authentication.dart';
 
 class discoverPage extends StatefulWidget {
   const discoverPage({Key? key}) : super(key: key);
@@ -19,11 +22,13 @@ class _discoverPageState extends State<discoverPage> {
   final double iconwidth = 25;
   @override
   Widget build(BuildContext context) {
+    final _victims = Provider.of<List<Victim>>(context);
     final user = context.read<FirebaseAuthMethods>().user;
     return Scaffold(
         appBar: AppBar(
           title: Text("SpotMe",
               style: TextStyle(fontSize: 30, color: Colors.white)),
+          automaticallyImplyLeading: false,
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
@@ -42,24 +47,36 @@ class _discoverPageState extends State<discoverPage> {
               SizedBox(),
               Container(
                 width: 500.0,
-                height: 100.0,
                 decoration: BoxDecoration(
                   color: Colors.red,
                 ),
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Icon(
-                        Icons.account_circle,
-                        color: Colors.white,
-                        size: 50.0,
-                      ),
-                      Container(
-                        child: Text("Welcome " + user.displayName!,
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Container(
+                          child: FutureBuilder<String>(
+                            future: null,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<String> snapshot) {
+                              if (user.displayName!.isNotEmpty) {
+                                return Text("Welcome " + user.displayName!,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold));
+                                //return Text('${time.data}');
+                              } else {
+                                return Text('Welcome',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold));
+                              }
+                            },
+                          ),
+                        ),
                       ),
                     ]),
               ),
@@ -87,7 +104,7 @@ class _discoverPageState extends State<discoverPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const helpForm()),
+                                      builder: (context) => helpForm()),
                                 );
                               },
                               icon: const Icon(
@@ -112,11 +129,11 @@ class _discoverPageState extends State<discoverPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const locatePage()),
+                                      builder: (context) => locatePage()),
                                 );
                               },
                               icon: const Icon(
-                                Icons.add_location_sharp,
+                                Icons.radar,
                                 color: Colors.red,
                                 size: 35,
                               ),
@@ -164,18 +181,17 @@ class _discoverPageState extends State<discoverPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const shelterList()),
+                                      builder: (context) => shelterList()),
                                 );
                               },
                               icon: const Icon(
-                                Icons.house_siding,
+                                Icons.near_me_rounded,
                                 color: Colors.red,
                                 size: 35,
                               ),
                             ),
                             Text(
-                              'Find Shelter',
+                              'Nearest Shelter',
                               style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                             SizedBox(

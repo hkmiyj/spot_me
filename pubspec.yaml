@@ -20,13 +20,17 @@ environment:
 
 
 dependencies:
+  carousel_slider: ^4.2.1
   cloud_firestore: ^3.4.4
   cupertino_icons: ^1.0.2
+  file_picker: ^5.2.5
   firebase_app_check: ^0.0.6+20
   firebase_auth: ^3.6.4
   firebase_core: ^1.23.0
+  firebase_storage: ^10.3.11
   flutter:
     sdk: flutter
+  flutter_easyloading: ^3.0.5
   flutter_launcher_icons: ^0.10.0
   flutter_map: ^2.2.0
   flutter_map_dragmarker: ^3.1.0
@@ -38,17 +42,21 @@ dependencies:
   geocoding: ^2.0.5
   geolocator: ^9.0.1
   google_sign_in: ^5.4.1
+  image_picker: ^0.8.6
   latlong2: ^0.8.1
   location: ^4.4.0
   map_launcher: ^2.4.0
   mapbox_gl: ^0.16.0
+  permission_handler: ^10.2.0
   persistent_bottom_nav_bar: any
+  popup_card: ^0.1.0
   provider: ^6.0.3
   shared_preferences: ^2.0.15
   sign_button: ^2.0.2
   simple_ripple_animation: ^0.0.3
   twitter_api_v2: ^4.0.2
   url_launcher: ^6.1.6
+  weather: ^2.0.1
 
 dev_dependencies:
   flutter_test:

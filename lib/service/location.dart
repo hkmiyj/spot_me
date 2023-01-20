@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:geocoding/geocoding.dart' as geo;
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import 'package:spot_me/model/userLocation.dart';
 import 'package:location/location.dart';
 
@@ -58,4 +61,15 @@ Future<String> getCoordinateToAddress(lat, long) async {
 getAddresstoCoordinate(placemarks) async {
   List<geo.Location> _locations = await geo.locationFromAddress(placemarks);
   return _locations;
+}
+
+calcDistanceDiff(LatLng coordinate, context) {
+  var userLocation = Provider.of<UserLocation>(context);
+  var _distanceInMeters = Geolocator.distanceBetween(
+    coordinate.latitude,
+    coordinate.longitude,
+    userLocation.latitude,
+    userLocation.longitude,
+  );
+  return _distanceInMeters;
 }

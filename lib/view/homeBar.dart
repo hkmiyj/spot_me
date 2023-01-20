@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import "package:spot_me/view/discover.dart";
-import 'package:spot_me/view/userPanel.dart';
+import 'package:spot_me/view/bottomNav/discover.dart';
+import 'package:spot_me/view/bottomNav/userPanel.dart';
 
-import 'map2.dart';
+import 'bottomNav/map2.dart';
 
 class homepage extends StatefulWidget {
   const homepage({Key? key}) : super(key: key);

@@ -3,16 +3,17 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import 'package:spot_me/service/firebase_authentication.dart';
-import 'package:spot_me/view/discover.dart';
+import 'package:spot_me/view/bottomNav/discover.dart';
+import 'package:spot_me/view/homeBar.dart';
 
-class profile extends StatefulWidget {
-  const profile({Key? key}) : super(key: key);
+class confirmationAccount extends StatefulWidget {
+  const confirmationAccount({Key? key}) : super(key: key);
 
   @override
-  State<profile> createState() => _profileState();
+  State<confirmationAccount> createState() => _confirmationAccountState();
 }
 
-class _profileState extends State<profile> {
+class _confirmationAccountState extends State<confirmationAccount> {
   final TextEditingController _displayName = TextEditingController();
   final TextEditingController _phoneNumber = TextEditingController();
   @override
@@ -69,12 +70,14 @@ class _profileState extends State<profile> {
                     ),
                     child: MaterialButton(
                       onPressed: () {
-                        user.updateDisplayName(_displayName.text);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const discoverPage()),
-                        );
+                        user.linkWithPhoneNumber(_phoneNumber.text);
+                        user
+                            .updateDisplayName(_displayName.text)
+                            .whenComplete(() => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => homepage()),
+                                ));
                       },
                       highlightColor: Colors.transparent,
                       splashColor: Color.fromARGB(255, 238, 134, 134),

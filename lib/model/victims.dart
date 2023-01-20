@@ -6,8 +6,10 @@ class Victim {
   final String numberOfVictim;
   final String description;
   final String phoneNumb;
+  final String imageUrl;
   final bool status;
   final Timestamp time;
+
   final GeoPoint location;
 
   const Victim({
@@ -16,6 +18,7 @@ class Victim {
     required this.numberOfVictim,
     required this.description,
     required this.phoneNumb,
+    required this.imageUrl,
     required this.status,
     required this.time,
     required this.location,
@@ -28,6 +31,7 @@ class Victim {
       numberOfVictim: map['numberOfVictim'] ?? '',
       description: map['description'] ?? '',
       phoneNumb: map['phoneNumb'] ?? '',
+      imageUrl: map['imageUrl'] ?? '',
       status: map['status'] ?? '',
       time: map['time'] ?? '',
       location: map['location'] ?? '',

@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:spot_me/view/profile.dart';
+import 'package:spot_me/view/homeBar.dart';
+import 'package:spot_me/view/login.dart';
+import 'package:spot_me/view/profileConfirmation.dart';
 import '../widget/showSnackBar.dart';
 import 'package:spot_me/route/route.dart' as route;
+import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthMethods {
   final FirebaseAuth _auth;
@@ -51,23 +54,49 @@ class FirebaseAuthMethods {
         email: email,
         password: password,
       );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const profile()),
-      );
-      Navigator.pushNamed(context, route.home);
+      if (user.displayName == null) {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => confirmationAccount()));
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => homepage()),
+        );
+      }
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message!); // Displaying the error message
+      showSnackBar(context, e.message!);
     }
   }
 
   // SIGN UP GMAIL
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 
   // SIGN OUT
   Future<void> signOut(BuildContext context) async {
     try {
       await _auth.signOut();
-      Navigator.pushNamed(context, route.login);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message!); // Displaying the error message
     }

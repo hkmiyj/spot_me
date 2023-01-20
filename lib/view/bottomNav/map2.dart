@@ -8,10 +8,9 @@ import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:spot_me/model/shelter.dart';
 import 'package:spot_me/model/victims.dart';
-import 'package:spot_me/service/map_configuration.dart';
+import 'package:spot_me/utils/const.dart';
 import 'package:spot_me/utils/shared_pref.dart';
-
-import '../utils/const.dart';
+import 'package:spot_me/view/topNav/shelter_page.dart';
 
 class mapPg extends StatefulWidget {
   const mapPg({super.key});
@@ -40,27 +39,31 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
     final _shelters = Provider.of<List<Shelter>>(context);
     final _victim = Provider.of<List<Victim>>(context);
 
-    for (var victim in _victim)
+    for (var i = 0; i < _victim.length; i++) {
       markerVictim.add(new Marker(
         height: 30,
         width: 30,
-        point: LatLng(victim.location.latitude, victim.location.longitude),
+        point: LatLng(_victim.elementAt(i).location.latitude,
+            _victim.elementAt(i).location.longitude),
         builder: (ctx) => new Icon(
-          Icons.error,
+          Icons.flag,
           color: Colors.red,
         ),
       ));
+    }
 
-    for (var shelter in _shelters)
+    for (var x = 0; x < _shelters.length; x++) {
       markerShelter.add(new Marker(
         height: 30,
         width: 30,
-        point: LatLng(shelter.location.latitude, shelter.location.longitude),
+        point: LatLng(_shelters.elementAt(x).location.latitude,
+            _shelters.elementAt(x).location.longitude),
         builder: (ctx) => new Icon(
           Icons.night_shelter,
           color: Colors.red,
         ),
       ));
+    }
   }
 
   void updateCurrentLocation() async {
@@ -183,90 +186,105 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     _addMarker();
-    final _shelters = Provider.of<List<Shelter>>(context);
     return Scaffold(
-      body: Stack(children: <Widget>[
-        FlutterMap(
-          mapController: mapController,
-          options: MapOptions(
-              maxBounds: LatLngBounds(
-                LatLng(-90, -180.0),
-                LatLng(90.0, 180.0),
-              ),
-              onMapCreated: _onMapController,
-              plugins: [LocationMarkerPlugin(), MarkerClusterPlugin()],
-              center: position,
-              zoom: 6.8,
-              interactiveFlags:
-                  InteractiveFlag.pinchZoom | InteractiveFlag.drag,
-              maxZoom: 15,
-              minZoom: 1 //6.8,
-              ),
-          layers: [
-            TileLayerOptions(
-              urlTemplate:
-                  "https://api.mapbox.com/styles/v1/damfud/cl7n4wktc001v16lnqcz7i2z8/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGFtZnVkIiwiYSI6ImNsN2s3dHNoMzBmOWIzb3F6OWkyMnM0ZWoifQ.N022hvg6-KtFSQ7NqetikQ",
-              additionalOptions: {"access_token": mapPk_AccessToken},
+        body: Center(
+          child: Stack(children: [
+            FlutterMap(
+              mapController: mapController,
+              options: MapOptions(
+                  maxBounds: LatLngBounds(
+                    LatLng(-90, -180.0),
+                    LatLng(90.0, 180.0),
+                  ),
+                  onMapCreated: _onMapController,
+                  plugins: [LocationMarkerPlugin(), MarkerClusterPlugin()],
+                  center: position,
+                  zoom: 6.8,
+                  interactiveFlags:
+                      InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+                  maxZoom: 15,
+                  minZoom: 1 //6.8,
+                  ),
+              layers: [
+                TileLayerOptions(
+                  urlTemplate:
+                      "https://api.mapbox.com/styles/v1/damfud/cl7n4wktc001v16lnqcz7i2z8/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGFtZnVkIiwiYSI6ImNsN2s3dHNoMzBmOWIzb3F6OWkyMnM0ZWoifQ.N022hvg6-KtFSQ7NqetikQ",
+                  additionalOptions: {"access_token": mapPk_AccessToken},
+                ),
+                LocationMarkerLayerOptions(headingStream: Stream.empty()),
+                MarkerClusterLayerOptions(
+                  maxClusterRadius: 100,
+                  size: Size(40, 40),
+                  fitBoundsOptions: FitBoundsOptions(
+                    padding: EdgeInsets.all(50),
+                  ),
+                  markers: markerVictim,
+                  polygonOptions: PolygonOptions(
+                      borderColor: Colors.blueAccent,
+                      color: Colors.black12,
+                      borderStrokeWidth: 3),
+                  builder: (context, markers) {
+                    return FloatingActionButton(
+                      child:
+                          Icon(Icons.flag), //Text(markers.length.toString()),
+                      onPressed: null,
+                    );
+                  },
+                ),
+                MarkerClusterLayerOptions(
+                  maxClusterRadius: 100,
+                  size: Size(40, 40),
+                  fitBoundsOptions: FitBoundsOptions(
+                    padding: EdgeInsets.all(50),
+                  ),
+                  markers: markerShelter,
+                  polygonOptions: PolygonOptions(
+                      borderColor: Colors.blueAccent,
+                      color: Colors.black12,
+                      borderStrokeWidth: 3),
+                  builder: (context, markers) {
+                    return FloatingActionButton(
+                      child:
+                          Icon(Icons.home), //Text(markers.length.toString()),
+                      onPressed: null,
+                    );
+                  },
+                ),
+              ],
+              nonRotatedChildren: [],
             ),
-            LocationMarkerLayerOptions(headingStream: Stream.empty()),
-            MarkerClusterLayerOptions(
-              maxClusterRadius: 100,
-              size: Size(40, 40),
-              fitBoundsOptions: FitBoundsOptions(
-                padding: EdgeInsets.all(50),
+            SafeArea(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => shelter_page()),
+                  );
+                },
+                child: Text("Register Shelter"),
+                style: ElevatedButton.styleFrom(shape: StadiumBorder()),
               ),
-              markers: markerVictim,
-              polygonOptions: PolygonOptions(
-                  borderColor: Colors.blueAccent,
-                  color: Colors.black12,
-                  borderStrokeWidth: 3),
-              builder: (context, markers) {
-                return FloatingActionButton(
-                  child: Icon(
-                      Icons.error_outline), //Text(markers.length.toString()),
-                  onPressed: null,
-                );
+            ),
+          ]),
+        ),
+        floatingActionButton: Row(
+          children: [
+            FloatingActionButton.small(
+              onPressed: () {
+                _animatedMapMove(position, 18);
               },
+              child: Icon(Icons.my_location),
             ),
-            MarkerClusterLayerOptions(
-              maxClusterRadius: 100,
-              size: Size(40, 40),
-              fitBoundsOptions: FitBoundsOptions(
-                padding: EdgeInsets.all(50),
-              ),
-              markers: markerShelter,
-              polygonOptions: PolygonOptions(
-                  borderColor: Colors.blueAccent,
-                  color: Colors.black12,
-                  borderStrokeWidth: 3),
-              builder: (context, markers) {
-                return FloatingActionButton(
-                  child: Icon(Icons.home), //Text(markers.length.toString()),
-                  onPressed: null,
-                );
+            FloatingActionButton.small(
+              child: Icon(Icons.flip_to_back),
+              backgroundColor: Colors.red,
+              onPressed: () {
+                _animatedMapMove(position, 6.5);
               },
             ),
           ],
-          nonRotatedChildren: [],
         ),
-        Positioned(
-            bottom: 80,
-            right: 16,
-            child: FloatingActionButton(
-              child: Icon(Icons.home),
-              backgroundColor: Colors.red,
-              onPressed: () {
-                rescueBottomSheet();
-              },
-            )),
-      ]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _animatedMapMove(position, 18);
-        },
-        child: Icon(Icons.my_location),
-      ),
-    );
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat);
   }
 }
 

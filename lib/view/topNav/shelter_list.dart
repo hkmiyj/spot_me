@@ -35,6 +35,17 @@ class _shelterListState extends State<shelterList> {
       return _distanceInMeters.toInt().toString() + " " + "Meter";
   }
 
+  calcDistanceDiff(LatLng coordinate) {
+    var userLocation = Provider.of<UserLocation>(context);
+    var _distanceInMeters = Geolocator.distanceBetween(
+      coordinate.latitude,
+      coordinate.longitude,
+      userLocation.latitude,
+      userLocation.longitude,
+    );
+    return _distanceInMeters;
+  }
+
   Future<String> address(LatLng coordinate) async {
     List<Placemark> placemarks = await placemarkFromCoordinates(
         coordinate.latitude, coordinate.longitude);
@@ -54,6 +65,7 @@ class _shelterListState extends State<shelterList> {
   Widget build(BuildContext context) {
     final _shelters = Provider.of<List<Shelter>>(context);
     //print(_shelters.first.location);
+
     if (_shelters == []) {
       return Center(child: CircularProgressIndicator());
     }
@@ -100,6 +112,134 @@ class _shelterListState extends State<shelterList> {
               ),
             ),
             Expanded(
+                child: ListView.builder(
+              itemCount: _shelters.length,
+              itemBuilder: ((context, index) {
+                _shelters.sort((a, b) => (calcDistanceDiff(
+                        LatLng(a.location.latitude, a.location.longitude)))
+                    .compareTo(calcDistanceDiff(
+                        LatLng(b.location.latitude, b.location.longitude))));
+                return Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.place_rounded,
+                        color: Colors.red,
+                        size: 45.0,
+                      ),
+                      title: Text(_shelters.elementAt(index).name),
+                      subtitle: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(calcDistance(LatLng(
+                              _shelters.elementAt(index).location.latitude,
+                              _shelters.elementAt(index).location.longitude))),
+                          Text("Address",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500)),
+                          FutureBuilder<String>(
+                            future: address(LatLng(
+                                _shelters.elementAt(index).location.latitude,
+                                _shelters.elementAt(index).location.longitude)),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<String> address) {
+                              if (address.hasData) {
+                                return Text('${address.data}');
+                              } else {
+                                return Text('No address found');
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      trailing: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                              onPressed: () async {
+                                final Uri launchUri = Uri(
+                                  scheme: 'tel',
+                                  path: _shelters.elementAt(index).phone,
+                                );
+                                await launchUrl(launchUri);
+                              },
+                              icon: Icon(
+                                Icons.phone,
+                                size: 20,
+                              )),
+                          IconButton(
+                              onPressed: () async {
+                                final availableMaps =
+                                    await MapLauncher.installedMaps;
+                                print(availableMaps);
+                                showModalBottomSheet<void>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                        height: 150,
+                                        color: Colors.white,
+                                        child: ListView(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Center(
+                                                child: Text("Choose Map",
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15.0,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontFamily:
+                                                            "WorkSansBold")),
+                                              ),
+                                            ),
+                                            for (var map in availableMaps)
+                                              ListTile(
+                                                onTap: () => map.showMarker(
+                                                  coords: Coords(
+                                                      _shelters
+                                                          .elementAt(index)
+                                                          .location
+                                                          .latitude,
+                                                      _shelters
+                                                          .elementAt(index)
+                                                          .location
+                                                          .longitude),
+                                                  title: _shelters
+                                                      .elementAt(index)
+                                                      .name,
+                                                ),
+                                                title: Text(
+                                                  map.mapName,
+                                                ),
+                                                leading: SvgPicture.asset(
+                                                  map.icon,
+                                                  height: 30.0,
+                                                  width: 30.0,
+                                                ),
+                                              ),
+                                          ],
+                                        ));
+                                  },
+                                );
+                              },
+                              icon: Icon(
+                                Icons.directions,
+                                size: 20,
+                              ))
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            )
+                /*
               child: ListView(children: <Widget>[
                 for (var shelter in _shelters)
                   if (shelter.status == true)
@@ -228,7 +368,8 @@ class _shelterListState extends State<shelterList> {
                       ),
                     ),
               ]),
-            ),
+            */
+                ),
           ],
         ));
   }

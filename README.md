@@ -69,35 +69,35 @@ This section should list any major frameworks/libraries used to bootstrap your p
   <td style="text-align: center, width: 180">
     
         
-Login Screen
+<div align="center"> Login Screen </div>
    
-<img width="180" alt="BMW" src="https://user-images.githubusercontent.com/1295961/160239273-ce881c0c-c3de-4953-9448-dfd12d7ffe30.png">
+<img width="180" alt="BMW" src="assetReadme/screenshot/login.jpg">
     </a>
 
   </td>
    <td style="text-align: center, width: 180">
     
         
-Registration Page
+<div align="center"> Map </div>
    
-<img width="180" alt="BMW" src="https://user-images.githubusercontent.com/1295961/160239273-ce881c0c-c3de-4953-9448-dfd12d7ffe30.png">
+<img width="180" alt="BMW" src="assetReadme/screenshot/map.jpg">
     </a>
 
   </td>
  <td style="text-align: center, width: 180">
             
-Map
+<div align="center"> Shelter Page </div>
    
-<img width="180" alt="BMW" src="https://user-images.githubusercontent.com/1295961/160239273-ce881c0c-c3de-4953-9448-dfd12d7ffe30.png">
+<img width="180" alt="BMW" src="assetReadme/screenshot/shelter.jpg">
     </a>
 
   </td>
   <td style="text-align: center, width: 180">
     
         
-Shelter Page
+<div align="center"> Shelter Register </div>
    
-<img width="180" alt="BMW" src="https://user-images.githubusercontent.com/1295961/160239273-ce881c0c-c3de-4953-9448-dfd12d7ffe30.png">
+<img width="180" alt="BMW" src="assetReadme/screenshot/shelterRegister.jpg">
     </a>
 
   </td>
@@ -137,6 +137,7 @@ Use this space to list resources you find helpful and would like to give credit 
 
 * [Flutter](https://pages.github.com)
 * [Flutter Map](https://docs.fleaflet.dev/)
+* [Scrcpy](https://github.com/Genymobile/scrcpy)
 * [Twitter Api](https://developer.twitter.com/en/docs/twitter-api)
 * [Mapbox](https://www.mapbox.com/)
 * [Firebase](https://docs.flutter.dev/development/data-and-backend/firebase)
@@ -175,3 +176,4 @@ Use this space to list resources you find helpful and would like to give credit 
 [Bootstrap-url]: https://getbootstrap.com
 [JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
 [JQuery-url]: https://jquery.com 
+ 

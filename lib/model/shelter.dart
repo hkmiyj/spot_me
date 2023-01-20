@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:spot_me/service/location.dart';
 
 class Shelter {
   final String userid;
@@ -35,7 +37,7 @@ class Shelter {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap(context) {
     return {
       'userid': userid,
       'name': name,
@@ -43,7 +45,7 @@ class Shelter {
       'phone': phone,
       'description': description,
       'status': status,
-      'benefit': benefit
+      'benefit': benefit,
     };
   }
 }
