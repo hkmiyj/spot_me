@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_easyloading: ^3.0.5
+  flutter_launch: ^0.3.0
   flutter_launcher_icons: ^0.10.0
   flutter_map: ^2.2.0
   flutter_map_dragmarker: ^3.1.0

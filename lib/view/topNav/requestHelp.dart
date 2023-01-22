@@ -2,19 +2,16 @@ import 'dart:core';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 import 'package:spot_me/model/victims.dart';
 import 'package:spot_me/service/firebase_authentication.dart';
-import 'package:spot_me/service/firebase_storage.dart';
 import 'package:spot_me/service/location.dart';
-import 'package:spot_me/view/topNav/shelter_list.dart';
+import 'package:spot_me/view/topNav/nearestShelter.dart';
 import 'package:spot_me/widget/showMap.dart';
 import 'package:spot_me/widget/showSnackBar.dart';
 import 'package:spot_me/model/userLocation.dart';
@@ -432,17 +429,17 @@ class _helpFormState extends State<helpForm> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => shelterList()),
+                              builder: (context) => NearestShelter()),
                         );
                       },
                       child: Text("Find Nearest Shelter")),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
-                        onPressed: () {}, child: Text("Turn On Live Location")),
+                        onPressed: () {}, child: Text("Update Location")),
                   )
                 ],
               ),
@@ -455,7 +452,6 @@ class _helpFormState extends State<helpForm> {
                       return secondBottomSheet(user, userLocation, _victims);
                     }
                   }
-                  return bottomsheet(user, userLocation);
                 }
                 ;
                 return bottomsheet(user, userLocation);

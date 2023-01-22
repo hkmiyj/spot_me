@@ -50,22 +50,6 @@ class _userPanelState extends State<userPanel> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text("Your Help Request"),
-                ),
-                for (var victim in _victims)
-                  if (user.uid == victim.userId)
-                    ListTile(
-                      title: Text(calcTime(victim.time.toDate())),
-                      trailing: ElevatedButton(
-                          onPressed: () {}, child: Text("Found")),
-                    ),
-              ],
-            )),
-            Card(
-                child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
                   child: Text("Shelter"),
                 ),
                 for (var shelter in _shelters)

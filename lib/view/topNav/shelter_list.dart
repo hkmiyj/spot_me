@@ -19,6 +19,8 @@ class shelterList extends StatefulWidget {
 }
 
 class _shelterListState extends State<shelterList> {
+  final searchController = TextEditingController();
+  List<Shelter> shelters = [];
   calcDistance(LatLng coordinate) {
     var userLocation = Provider.of<UserLocation>(context);
     var _distanceInMeters = Geolocator.distanceBetween(
@@ -61,12 +63,22 @@ class _shelterListState extends State<shelterList> {
     return (address);
   }
 
+  void searchShelter(String query) {
+    var _shelter = Provider.of<List<Shelter>>(context, listen: false);
+    final suggestions = _shelter.where((shelter) {
+      final shelterTittle = shelter.name.toLowerCase();
+      final input = query.toLowerCase();
+      return shelterTittle.contains(input);
+    }).toList();
+    setState(() => shelters = suggestions);
+  }
+
   @override
   Widget build(BuildContext context) {
     final _shelters = Provider.of<List<Shelter>>(context);
-    //print(_shelters.first.location);
+    shelters = _shelters;
 
-    if (_shelters == []) {
+    if (shelters == []) {
       return Center(child: CircularProgressIndicator());
     }
     return Scaffold(
@@ -82,6 +94,7 @@ class _shelterListState extends State<shelterList> {
                 child: Column(
                   children: [
                     TextField(
+                      controller: searchController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(
                           Icons.search,
@@ -89,23 +102,7 @@ class _shelterListState extends State<shelterList> {
                         hintText: 'Search',
                         border: OutlineInputBorder(),
                       ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red, // Background color
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 138.0),
-                        child: Text(
-                          "Search",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15.0,
-                              fontFamily: "WorkSansBold"),
-                        ),
-                      ),
+                      onChanged: searchShelter,
                     ),
                   ],
                 ),
@@ -113,12 +110,13 @@ class _shelterListState extends State<shelterList> {
             ),
             Expanded(
                 child: ListView.builder(
-              itemCount: _shelters.length,
+              itemCount: shelters.length,
               itemBuilder: ((context, index) {
-                _shelters.sort((a, b) => (calcDistanceDiff(
+                shelters.sort((a, b) => (calcDistanceDiff(
                         LatLng(a.location.latitude, a.location.longitude)))
                     .compareTo(calcDistanceDiff(
                         LatLng(b.location.latitude, b.location.longitude))));
+                final shelter = shelters[index];
                 return Card(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -128,22 +126,20 @@ class _shelterListState extends State<shelterList> {
                         color: Colors.red,
                         size: 45.0,
                       ),
-                      title: Text(_shelters.elementAt(index).name),
+                      title: Text(shelter.name),
                       subtitle: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(calcDistance(LatLng(
-                              _shelters.elementAt(index).location.latitude,
-                              _shelters.elementAt(index).location.longitude))),
+                          Text(calcDistance(LatLng(shelter.location.latitude,
+                              shelter.location.longitude))),
                           Text("Address",
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w500)),
                           FutureBuilder<String>(
-                            future: address(LatLng(
-                                _shelters.elementAt(index).location.latitude,
-                                _shelters.elementAt(index).location.longitude)),
+                            future: address(LatLng(shelter.location.latitude,
+                                shelter.location.longitude)),
                             builder: (BuildContext context,
                                 AsyncSnapshot<String> address) {
                               if (address.hasData) {
@@ -163,7 +159,7 @@ class _shelterListState extends State<shelterList> {
                               onPressed: () async {
                                 final Uri launchUri = Uri(
                                   scheme: 'tel',
-                                  path: _shelters.elementAt(index).phone,
+                                  path: shelter.phone,
                                 );
                                 await launchUrl(launchUri);
                               },
@@ -202,17 +198,10 @@ class _shelterListState extends State<shelterList> {
                                               ListTile(
                                                 onTap: () => map.showMarker(
                                                   coords: Coords(
-                                                      _shelters
-                                                          .elementAt(index)
-                                                          .location
-                                                          .latitude,
-                                                      _shelters
-                                                          .elementAt(index)
-                                                          .location
-                                                          .longitude),
-                                                  title: _shelters
-                                                      .elementAt(index)
-                                                      .name,
+                                                      shelter.location.latitude,
+                                                      shelter
+                                                          .location.longitude),
+                                                  title: shelter.name,
                                                 ),
                                                 title: Text(
                                                   map.mapName,

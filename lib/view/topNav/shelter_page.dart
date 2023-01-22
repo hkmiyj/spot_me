@@ -1,14 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:spot_me/service/firebase_authentication.dart';
 import 'package:spot_me/service/location.dart';
 import '../../model/userLocation.dart';
 import '../../widget/showSnackBar.dart';
-import 'package:geolocator/geolocator.dart';
 
 class shelter_page extends StatefulWidget {
   const shelter_page({super.key});

@@ -23,7 +23,6 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
   late MapController mapController;
   late LatLng position;
   List<Marker> markerShelter = [];
-  List<Marker> markerVictim = [];
 
   late List<Widget> carouselItems;
 
@@ -37,21 +36,6 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
 
   void _addMarker() {
     final _shelters = Provider.of<List<Shelter>>(context);
-    final _victim = Provider.of<List<Victim>>(context);
-
-    for (var i = 0; i < _victim.length; i++) {
-      markerVictim.add(new Marker(
-        height: 30,
-        width: 30,
-        point: LatLng(_victim.elementAt(i).location.latitude,
-            _victim.elementAt(i).location.longitude),
-        builder: (ctx) => new Icon(
-          Icons.flag,
-          color: Colors.red,
-        ),
-      ));
-    }
-
     for (var x = 0; x < _shelters.length; x++) {
       markerShelter.add(new Marker(
         height: 30,
@@ -183,6 +167,132 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
     );
   }
 
+  bottomsheetShelter(shelter) {
+    return showModalBottomSheet<void>(
+      barrierColor: Colors.white.withOpacity(0),
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) => DraggableScrollableSheet(
+        builder: (BuildContext context, ScrollController scrollController) {
+          return SingleChildScrollView();
+        },
+      ),
+    );
+  }
+
+  bottomsheetVic(victim) {
+    return showModalBottomSheet<void>(
+      barrierColor: Colors.white.withOpacity(0),
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) => DraggableScrollableSheet(
+        expand: false,
+        builder: (BuildContext context, ScrollController scrollController) {
+          return SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height / 2,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                        child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            victim.name.toUpperCase(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            child: Text(
+                              "Message",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            child: Text(
+                              "Call",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.track_changes,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              _animatedMapMove(
+                                  LatLng(victim.location.latitude,
+                                      victim.location.longitude),
+                                  17);
+                            },
+                          ),
+                          Container(
+                            child: Text(
+                              "Track",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(32),
+                    child: Text(
+                      victim.description,
+                      softWrap: true,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _addMarker();
@@ -212,25 +322,6 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
                   additionalOptions: {"access_token": mapPk_AccessToken},
                 ),
                 LocationMarkerLayerOptions(headingStream: Stream.empty()),
-                MarkerClusterLayerOptions(
-                  maxClusterRadius: 100,
-                  size: Size(40, 40),
-                  fitBoundsOptions: FitBoundsOptions(
-                    padding: EdgeInsets.all(50),
-                  ),
-                  markers: markerVictim,
-                  polygonOptions: PolygonOptions(
-                      borderColor: Colors.blueAccent,
-                      color: Colors.black12,
-                      borderStrokeWidth: 3),
-                  builder: (context, markers) {
-                    return FloatingActionButton(
-                      child:
-                          Icon(Icons.flag), //Text(markers.length.toString()),
-                      onPressed: null,
-                    );
-                  },
-                ),
                 MarkerClusterLayerOptions(
                   maxClusterRadius: 100,
                   size: Size(40, 40),

@@ -1,20 +1,17 @@
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/dragmarker.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 import 'package:spot_me/model/userLocation.dart';
 import 'package:spot_me/model/victims.dart';
-import 'package:spot_me/service/location.dart';
 import 'package:spot_me/utils/const.dart';
-import 'package:spot_me/widget/showMap.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // https://www.youtube.com/watch?v=JiSsS1Xj5uQ
 
@@ -104,9 +101,9 @@ class _locatePageState extends State<locatePage> with TickerProviderStateMixin {
     double distanceDiff = _distanceInMeters / 1000;
     if (_distanceInMeters > 1000) {
       _distanceInMeters = _distanceInMeters / 1000;
-      return distanceDiff.toStringAsFixed(2) + " KM";
+      return distanceDiff.toStringAsFixed(2) + " Kilometer";
     } else
-      return _distanceInMeters.toInt().toString() + " M";
+      return _distanceInMeters.toInt().toString() + " Meter";
   }
 
   calcDistanceDiff(LatLng coordinate) {
@@ -120,14 +117,30 @@ class _locatePageState extends State<locatePage> with TickerProviderStateMixin {
     return _distanceInMeters;
   }
 
+  Future<String> address(LatLng coordinate) async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+        coordinate.latitude, coordinate.longitude);
+    Placemark placeMark = placemarks[0];
+    String? name = placeMark.name;
+    String? subLocality = placeMark.subLocality;
+    String? locality = placeMark.locality;
+    String? administrativeArea = placeMark.administrativeArea;
+    String? postalCode = placeMark.postalCode;
+    String? country = placeMark.country;
+    String address =
+        "${name}, ${subLocality}, ${locality}, ${administrativeArea} ${postalCode}, ${country}";
+    return (address);
+  }
+
   bottomSheetBar() {
     return showModalBottomSheet<void>(
+      barrierColor: Colors.white.withOpacity(0),
       isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
         final _victim = Provider.of<List<Victim>>(context);
         return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.6,
+          height: MediaQuery.of(context).size.height * 0.3,
           child: Center(
             child: Column(
               children: [
@@ -170,7 +183,15 @@ class _locatePageState extends State<locatePage> with TickerProviderStateMixin {
                               _victim.elementAt(index).location.latitude,
                               _victim.elementAt(index).location.longitude))),
                           onTap: () {
-                            print("test");
+                            _animatedMapMove(
+                                LatLng(
+                                    _victim.elementAt(index).location.latitude,
+                                    _victim
+                                        .elementAt(index)
+                                        .location
+                                        .longitude),
+                                17);
+                            detailBottomSheet(_victim.elementAt(index));
                           },
                           dense: true,
                           selected: false,
@@ -187,123 +208,222 @@ class _locatePageState extends State<locatePage> with TickerProviderStateMixin {
     );
   }
 
+  detailBottomSheet(victim) {
+    return showModalBottomSheet<void>(
+        elevation: 0,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        context: context,
+        builder: (
+          BuildContext context,
+        ) =>
+            DraggableScrollableSheet(
+              expand: false,
+              builder: (BuildContext context, scrollController) {
+                return SingleChildScrollView(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: Column(
+                      children: [
+                        Expanded(child: Builder(builder: (context) {
+                          if (victim.imageUrl == "") {
+                            return Image.network(
+                              "https://firebasestorage.googleapis.com/v0/b/spotme-0001.appspot.com/o/victims%2Fimage_not_found.png?alt=media&token=271c6311-9fdf-428e-a31d-e9a19a08e070",
+                              width: 600,
+                              height: 240,
+                              fit: BoxFit.cover,
+                            );
+                          } else
+                            return Image.network(
+                              victim.imageUrl,
+                              width: 600,
+                              height: 240,
+                              fit: BoxFit.cover,
+                            );
+                        })),
+                        Container(
+                            child: Padding(
+                          padding: const EdgeInsets.all(32.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                victim.name.toUpperCase(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              FutureBuilder<String>(
+                                future: address(LatLng(victim.location.latitude,
+                                    victim.location.longitude)),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<String> address) {
+                                  if (address.hasData) {
+                                    return Text(
+                                      '${address.data}',
+                                    );
+                                  } else {
+                                    return Text(
+                                      'No address found',
+                                      style: TextStyle(
+                                        color: Colors.grey[500],
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              Text(
+                                calcDistance(LatLng(victim.location.latitude,
+                                    victim.location.longitude)),
+                                style: TextStyle(
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                              StreamBuilder<Object>(
+                                  stream: null,
+                                  builder: (context, snapshot) {
+                                    return Text(
+                                      calcTime(victim.time.toDate()),
+                                      style: TextStyle(
+                                        color: Colors.grey[500],
+                                      ),
+                                    );
+                                  }),
+                            ],
+                          ),
+                        )),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.message,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () async {
+                                    String text =
+                                        "Hello Im am a volunteer from SpotMe, I am available to lend a hand, what can I do to help you ?";
+                                    String url =
+                                        "https://wa.me/${victim.phoneNumb}?text=${Uri.encodeFull(text)}";
+                                    if (await canLaunchUrl(Uri.parse(url))) {
+                                      await launchUrl(Uri.parse(url),
+                                          mode: LaunchMode.externalApplication);
+                                    }
+                                  },
+                                ),
+                                Container(
+                                  child: Text(
+                                    "Message",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.call,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () async {
+                                    final Uri launchUri = Uri(
+                                      scheme: 'tel',
+                                      path: victim.phoneNumb,
+                                    );
+                                    await launchUrl(launchUri);
+                                  },
+                                ),
+                                Container(
+                                  child: Text(
+                                    "Call",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.track_changes,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                    _animatedMapMove(
+                                        LatLng(victim.location.latitude,
+                                            victim.location.longitude),
+                                        17);
+                                  },
+                                ),
+                                Container(
+                                  child: Text(
+                                    "Track",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(32),
+                          child: Text(
+                            victim.description,
+                            softWrap: true,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ));
+  }
+
   _addMarker(victim, markerVictim) {
     for (var i = 0; i < victim.length; i++) {
       markerVictim.add(new Marker(
-        height: 30,
-        width: 30,
-        point: LatLng(victim.elementAt(i).location.latitude,
-            victim.elementAt(i).location.longitude),
-        builder: (ctx) => FloatingActionButton(
-          heroTag: null,
-          backgroundColor: Colors.white,
-          onPressed: () {
-            victimInfo(victim.elementAt(i));
-            _animatedMapMove(
-                LatLng(victim.elementAt(i).location.latitude,
-                    victim.elementAt(i).location.longitude),
-                13);
-          },
-          child: Icon(
-            Icons.flag,
-            color: Colors.red,
-          ),
-        ),
-      ));
-    }
-  }
-
-  victimInfo(victim) {
-    return showModalBottomSheet<void>(
-        barrierColor: Colors.white.withOpacity(0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        backgroundColor: Colors.white,
-        isScrollControlled: true,
-        context: context,
-        builder: (BuildContext context) {
-          return LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              return Container(
-                height: constraints.maxHeight / 2.8,
-                child: ListView(
-                  children: [
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('You Request For Help',
-                              style: TextStyle(fontWeight: FontWeight.w500)),
-                        ),
-                        Container(
-                          child: ListTile(
-                            leading: RippleAnimation(
-                                repeat: true,
-                                color: Colors.blue,
-                                minRadius: 15,
-                                ripplesCount: 6,
-                                child: Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                  ),
-                                )),
-                            title: Text(victim.name.toUpperCase(),
-                                style: TextStyle(fontWeight: FontWeight.w500)),
-                            subtitle: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(calcTime(victim.time.toDate())),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Card(
-                            child: Column(children: [
-                          ListTile(
-                              title: Text(
-                                "Description",
-                              ),
-                              subtitle: Text(victim.description)),
-                          ListTile(
-                            title: Text(
-                              "Phone Number",
-                            ),
-                            subtitle: FutureBuilder<String>(
-                              future: null,
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<String> snapshot) {
-                                if (victim.phoneNumb!.isNotEmpty) {
-                                  return Text(victim.phoneNumb!);
-                                } else {
-                                  return Text(
-                                    'Phone Not Found',
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                        ])),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text("Contact Them"),
-                        ),
-                      ],
-                    )
-                  ],
+          height: 30,
+          width: 30,
+          point: LatLng(victim.elementAt(i).location.latitude,
+              victim.elementAt(i).location.longitude),
+          builder: (ctx) => new IconButton(
+                onPressed: () {
+                  _animatedMapMove(
+                      LatLng(victim.elementAt(i).location.latitude,
+                          victim.elementAt(i).location.longitude),
+                      17);
+                  detailBottomSheet(victim.elementAt(i));
+                },
+                icon: Icon(
+                  Icons.flag,
+                  color: Colors.red,
                 ),
-              );
-            },
-          );
-        });
+              )));
+    }
   }
 
   @override
@@ -322,7 +442,7 @@ class _locatePageState extends State<locatePage> with TickerProviderStateMixin {
             child: FlutterMap(
           options: MapOptions(
             center: LatLng(userLocation.latitude, userLocation.longitude),
-            zoom: 6.8,
+            zoom: 12,
             onMapCreated: _onMapController,
             interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
             maxZoom: 15,
@@ -343,6 +463,24 @@ class _locatePageState extends State<locatePage> with TickerProviderStateMixin {
             LocationMarkerLayerOptions(
               headingStream: Stream.empty(),
             ),
+            MarkerClusterLayerOptions(
+              showPolygon: false,
+              maxClusterRadius: 100,
+              size: Size(40, 40),
+              fitBoundsOptions: FitBoundsOptions(
+                padding: EdgeInsets.all(50),
+              ),
+              markers: markerVictim,
+              builder: (context, markers) {
+                return Container(
+                    decoration: BoxDecoration(
+                        color: Colors.red, shape: BoxShape.circle),
+                    child: Icon(
+                      Icons.flag,
+                      color: Colors.white,
+                    ));
+              },
+            ),
           ],
           nonRotatedChildren: [
             FloatingActionButton.small(
@@ -354,6 +492,15 @@ class _locatePageState extends State<locatePage> with TickerProviderStateMixin {
             ),
           ],
         )),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: "btn1",
+        child: Icon(Icons.flip_to_back),
+        backgroundColor: Colors.red,
+        onPressed: () {
+          _animatedMapMove(
+              LatLng(userLocation.latitude, userLocation.longitude), 3);
+        },
       ),
     );
   }
