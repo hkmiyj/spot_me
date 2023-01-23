@@ -3,14 +3,22 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:map_launcher/map_launcher.dart';
+import 'package:map_launcher/src/models.dart' as maps;
 import 'package:provider/provider.dart';
 import 'package:spot_me/model/shelter.dart';
+import 'package:spot_me/model/userLocation.dart';
 import 'package:spot_me/model/victims.dart';
 import 'package:spot_me/utils/const.dart';
 import 'package:spot_me/utils/shared_pref.dart';
-import 'package:spot_me/view/topNav/shelter_page.dart';
+
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class mapPg extends StatefulWidget {
   const mapPg({super.key});
@@ -37,24 +45,26 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
   void _addMarker() {
     final _shelters = Provider.of<List<Shelter>>(context);
     for (var x = 0; x < _shelters.length; x++) {
+      final shelter = _shelters[x];
       markerShelter.add(new Marker(
         height: 30,
         width: 30,
         point: LatLng(_shelters.elementAt(x).location.latitude,
             _shelters.elementAt(x).location.longitude),
-        builder: (ctx) => new Icon(
-          Icons.night_shelter,
-          color: Colors.red,
+        builder: (ctx) => IconButton(
+          onPressed: () {
+            _animatedMapMove(
+                LatLng(shelter.location.latitude, shelter.location.longitude),
+                17);
+            detailBottomSheet(shelter);
+          },
+          icon: Icon(
+            Icons.night_shelter,
+            color: Colors.red,
+          ),
         ),
       ));
     }
-  }
-
-  void updateCurrentLocation() async {
-    Location location = Location();
-    LocationData _locationData;
-    _locationData = await location.getLocation();
-    position = LatLng(_locationData.latitude!, _locationData.longitude!);
   }
 
   void _onMapController(MapController controller) async {
@@ -167,136 +177,213 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
     );
   }
 
-  bottomsheetShelter(shelter) {
+  detailBottomSheet(Shelter shelter) {
     return showModalBottomSheet<void>(
-      barrierColor: Colors.white.withOpacity(0),
-      isScrollControlled: true,
-      context: context,
-      builder: (BuildContext context) => DraggableScrollableSheet(
-        builder: (BuildContext context, ScrollController scrollController) {
-          return SingleChildScrollView();
-        },
-      ),
-    );
-  }
-
-  bottomsheetVic(victim) {
-    return showModalBottomSheet<void>(
-      barrierColor: Colors.white.withOpacity(0),
-      isScrollControlled: true,
-      context: context,
-      builder: (BuildContext context) => DraggableScrollableSheet(
-        expand: false,
-        builder: (BuildContext context, ScrollController scrollController) {
-          return SingleChildScrollView(
-            child: Container(
-              height: MediaQuery.of(context).size.height / 2,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Container(
-                        child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            victim.name.toUpperCase(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            child: Text(
-                              "Message",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
+        elevation: 0,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        context: context,
+        builder: (
+          BuildContext context,
+        ) =>
+            DraggableScrollableSheet(
+              expand: false,
+              builder: (BuildContext context, scrollController) {
+                return SingleChildScrollView(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: Column(
+                      children: [
+                        Container(
+                            child: Padding(
+                          padding: const EdgeInsets.all(32.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                shelter.name.toUpperCase(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            child: Text(
-                              "Call",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: FutureBuilder<String>(
+                                  future: address(LatLng(
+                                      shelter.location.latitude,
+                                      shelter.location.longitude)),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> address) {
+                                    if (address.hasData) {
+                                      return Text(
+                                        '${address.data}',
+                                      );
+                                    } else {
+                                      return Text(
+                                        'No address found',
+                                        style: TextStyle(
+                                          color: Colors.grey[500],
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.track_changes,
-                              color: Colors.red,
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                              _animatedMapMove(
-                                  LatLng(victim.location.latitude,
-                                      victim.location.longitude),
-                                  17);
-                            },
-                          ),
-                          Container(
-                            child: Text(
-                              "Track",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  calcDistance(LatLng(shelter.location.latitude,
+                                      shelter.location.longitude)),
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      )
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(32),
-                    child: Text(
-                      victim.description,
-                      softWrap: true,
+                        )),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.call,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () async {
+                                    final Uri launchUri = Uri(
+                                      scheme: 'tel',
+                                      path: shelter.phone,
+                                    );
+                                    await launchUrl(launchUri);
+                                  },
+                                ),
+                                Container(
+                                  child: Text(
+                                    "Call",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                    onPressed: () async {
+                                      final availableMaps =
+                                          await MapLauncher.installedMaps;
+                                      print(availableMaps);
+                                      showModalBottomSheet<void>(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Container(
+                                              height: 150,
+                                              color: Colors.white,
+                                              child: ListView(
+                                                children: <Widget>[
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Center(
+                                                      child: Text("Choose Map",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 15.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontFamily:
+                                                                  "WorkSansBold")),
+                                                    ),
+                                                  ),
+                                                  for (var map in availableMaps)
+                                                    ListTile(
+                                                      onTap: () =>
+                                                          map.showMarker(
+                                                        coords: maps.Coords(
+                                                            shelter.location
+                                                                .latitude,
+                                                            shelter.location
+                                                                .longitude),
+                                                        title: shelter.name,
+                                                      ),
+                                                      title: Text(
+                                                        map.mapName,
+                                                      ),
+                                                      leading: SvgPicture.asset(
+                                                        map.icon,
+                                                        height: 30.0,
+                                                        width: 30.0,
+                                                      ),
+                                                    ),
+                                                ],
+                                              ));
+                                        },
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.directions,
+                                      size: 20,
+                                      color: Colors.red,
+                                    )),
+                                Container(
+                                  child: Text(
+                                    "Map",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(32),
+                          child: Text(
+                            shelter.description,
+                            softWrap: true,
+                          ),
+                        )
+                      ],
                     ),
-                  )
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
+                  ),
+                );
+              },
+            ));
   }
 
   @override
   Widget build(BuildContext context) {
     _addMarker();
     return Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_rounded,
+              color: Colors.red,
+              shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 20.0)],
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
         body: Center(
           child: Stack(children: [
             FlutterMap(
@@ -344,18 +431,6 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
               ],
               nonRotatedChildren: [],
             ),
-            SafeArea(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => shelter_page()),
-                  );
-                },
-                child: Text("Register Shelter"),
-                style: ElevatedButton.styleFrom(shape: StadiumBorder()),
-              ),
-            ),
           ]),
         ),
         floatingActionButton: Row(
@@ -377,23 +452,53 @@ class _mapPgState extends State<mapPg> with TickerProviderStateMixin {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.startFloat);
   }
-}
 
-class mapCarousel extends StatefulWidget {
-  const mapCarousel({super.key});
+  calcTime(DateTime timestamp) {
+    DateTime currentTime = DateTime.now();
+    Duration difference = currentTime.difference(timestamp);
+    var sformat = DateFormat('yyyy/MM/dd hh:mm a');
+    var time = sformat.format(timestamp);
 
-  @override
-  State<mapCarousel> createState() => _mapCarouselState();
-}
+    if (difference.inSeconds < 60) {
+      return difference.inSeconds.toString() + " Seconds ago";
+    } else if (difference.inMinutes < 60) {
+      return difference.inMinutes.toString() + " Minutes Ago";
+    } else if (difference.inHours < 24) {
+      return difference.inHours.toString() + " Hour Ago";
+    } else if (difference.inDays < 7) {
+      return difference.inDays.toString() + " Days Ago";
+    } else
+      return time;
+  }
 
-class _mapCarouselState extends State<mapCarousel> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: Card(
-        color: Colors.white,
-      ),
+  calcDistance(LatLng coordinate) {
+    var userLocation = Provider.of<UserLocation>(context);
+    var _distanceInMeters = Geolocator.distanceBetween(
+      coordinate.latitude,
+      coordinate.longitude,
+      userLocation.latitude,
+      userLocation.longitude,
     );
+    double distanceDiff = _distanceInMeters / 1000;
+    if (_distanceInMeters > 1000) {
+      _distanceInMeters = _distanceInMeters / 1000;
+      return distanceDiff.toStringAsFixed(2) + " Kilometer";
+    } else
+      return _distanceInMeters.toInt().toString() + " Meter";
+  }
+
+  Future<String> address(LatLng coordinate) async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+        coordinate.latitude, coordinate.longitude);
+    Placemark placeMark = placemarks[0];
+    String? name = placeMark.name;
+    String? subLocality = placeMark.subLocality;
+    String? locality = placeMark.locality;
+    String? administrativeArea = placeMark.administrativeArea;
+    String? postalCode = placeMark.postalCode;
+    String? country = placeMark.country;
+    String address =
+        "${name}, ${subLocality}, ${locality}, ${administrativeArea} ${postalCode}, ${country}";
+    return (address);
   }
 }

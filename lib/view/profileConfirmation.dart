@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -70,7 +71,12 @@ class _confirmationAccountState extends State<confirmationAccount> {
                     ),
                     child: MaterialButton(
                       onPressed: () {
-                        user.linkWithPhoneNumber(_phoneNumber.text);
+                        FirebaseFirestore.instance.collection("users").add({
+                          'user': user.uid,
+                          'email': user.email,
+                          'name': _displayName.text,
+                          'phoneNumber': _phoneNumber.text,
+                        });
                         user
                             .updateDisplayName(_displayName.text)
                             .whenComplete(() => Navigator.push(

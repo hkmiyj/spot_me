@@ -23,7 +23,6 @@ class FirebaseAuthMethods {
   Future<void> signUpWithEmail({
     required String email,
     required String password,
-    required String username,
     required BuildContext context,
   }) async {
     try {
@@ -31,8 +30,13 @@ class FirebaseAuthMethods {
         email: email,
         password: password,
       );
-      Navigator.pushNamed(context, route.home);
-      showSnackBar(context, "Register Successful");
+      Navigator.pop(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
+      showSuccessSnackBar(context, "Register Successful");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');

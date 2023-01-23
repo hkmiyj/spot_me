@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spot_me/view/bottomNav/discover.dart';
-import 'package:spot_me/view/bottomNav/userPanel.dart';
+import 'package:spot_me/view/Navigation/ShelterManage.dart';
 
 import 'bottomNav/map2.dart';
 
@@ -16,7 +16,7 @@ class _homepageState extends State<homepage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     discoverPage(),
-    userPanel(),
+    shelterManager(),
     mapPg(),
     //map(),
   ];

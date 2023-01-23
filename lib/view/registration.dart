@@ -19,19 +19,13 @@ class _registrationPageState extends State<registrationPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _passConfirm = TextEditingController();
-  final TextEditingController _phoneNumber = TextEditingController();
-
   void signUpUser() async {
     if (_form.currentState!.validate()) {
-      context
-          .read<FirebaseAuthMethods>()
-          .signUpWithEmail(
-            username: _pass.text,
+      context.read<FirebaseAuthMethods>().signUpWithEmail(
             email: _emailController.text,
             password: _pass.text,
             context: context,
-          )
-          .then((value) => successBox());
+          );
     }
   }
 
@@ -148,27 +142,6 @@ class _registrationPageState extends State<registrationPage> {
             TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your phone number';
-                }
-                return null;
-              },
-              controller: _phoneNumber,
-              decoration: InputDecoration(
-                prefixIcon: Icon(
-                  Icons.phone,
-                  color: Color(0xFF666666),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                ),
-                hintText: '0112347680',
-                labelText: 'Phone Number',
-              ),
-            ),
-            SizedBox(height: 10),
-            TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
                   return 'Please enter your password';
                 } else if (value.length == 6)
                   return 'Please enter your more than 6 character';
@@ -240,7 +213,6 @@ class _registrationPageState extends State<registrationPage> {
           Center(
             child: TextButton(
               onPressed: () {
-                Navigator.of(ctx).pop();
                 Navigator.pop(
                   context,
                   MaterialPageRoute(

@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spot_me/model/victims.dart';
 import 'package:spot_me/service/twitter_apii.dart';
+import 'package:spot_me/view/Navigation/emergency.dart';
+import 'package:spot_me/view/Navigation/mainShelterPage.dart';
 import 'package:spot_me/view/bottomNav/map.dart';
-import 'package:spot_me/view/topNav/requestHelp.dart';
-import 'package:spot_me/view/topNav/shelter_list.dart';
-import 'package:spot_me/view/topNav/locate.dart';
-import 'package:spot_me/view/topNav/shelter_page.dart';
+import 'package:spot_me/view/Navigation/requestHelp.dart';
+import 'package:spot_me/view/Navigation/shelter_list.dart';
+import 'package:spot_me/view/Navigation/locate.dart';
+import 'package:spot_me/view/Navigation/shelter_page.dart';
 import '../../service/firebase_authentication.dart';
 
 class discoverPage extends StatefulWidget {
@@ -114,7 +116,7 @@ class _discoverPageState extends State<discoverPage> {
                               ),
                             ),
                             Text(
-                              'Ask Help',
+                              'Help',
                               style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                             SizedBox(
@@ -154,18 +156,17 @@ class _discoverPageState extends State<discoverPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const shelter_page()),
+                                      builder: (context) => ShelterMenu()),
                                 );
                               },
                               icon: const Icon(
-                                Icons.other_houses_rounded,
+                                Icons.night_shelter,
                                 color: Colors.red,
                                 size: 35,
                               ),
                             ),
                             Text(
-                              'Add Shelter',
+                              'Shelter',
                               style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                             SizedBox(
@@ -174,24 +175,23 @@ class _discoverPageState extends State<discoverPage> {
                           ],
                         ),
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             IconButton(
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => shelterList()),
+                                      builder: (context) => EmergencyContact()),
                                 );
                               },
                               icon: const Icon(
-                                Icons.near_me_rounded,
+                                Icons.contact_phone,
                                 color: Colors.red,
                                 size: 35,
                               ),
                             ),
                             Text(
-                              'Nearest Shelter',
+                              'Contact',
                               style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                             SizedBox(

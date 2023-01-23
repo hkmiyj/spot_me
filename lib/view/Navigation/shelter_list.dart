@@ -83,31 +83,11 @@ class _shelterListState extends State<shelterList> {
     }
     return Scaffold(
         appBar: AppBar(
-          title: Text('Shelter'),
+          title: Text('Shelter List'),
           centerTitle: true,
         ),
         body: Column(
           children: [
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(15),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: searchController,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.search,
-                        ),
-                        hintText: 'Search',
-                        border: OutlineInputBorder(),
-                      ),
-                      onChanged: searchShelter,
-                    ),
-                  ],
-                ),
-              ),
-            ),
             Expanded(
                 child: ListView.builder(
               itemCount: shelters.length,
@@ -141,9 +121,9 @@ class _shelterListState extends State<shelterList> {
                             future: address(LatLng(shelter.location.latitude,
                                 shelter.location.longitude)),
                             builder: (BuildContext context,
-                                AsyncSnapshot<String> address) {
-                              if (address.hasData) {
-                                return Text('${address.data}');
+                                AsyncSnapshot<String> snapshots) {
+                              if (snapshots.hasData) {
+                                return Text('${snapshots.data}');
                               } else {
                                 return Text('No address found');
                               }

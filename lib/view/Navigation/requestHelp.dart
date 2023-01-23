@@ -6,12 +6,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
+import 'package:spot_me/model/shelter.dart';
 import 'package:spot_me/model/victims.dart';
 import 'package:spot_me/service/firebase_authentication.dart';
 import 'package:spot_me/service/location.dart';
-import 'package:spot_me/view/topNav/nearestShelter.dart';
+import 'package:spot_me/view/Navigation/nearestShelter.dart';
 import 'package:spot_me/widget/showMap.dart';
 import 'package:spot_me/widget/showSnackBar.dart';
 import 'package:spot_me/model/userLocation.dart';
@@ -45,6 +47,13 @@ class _helpFormState extends State<helpForm> {
       return difference.inDays.toString() + " Days Ago";
     } else
       return time;
+  }
+
+  void updateLocation(userId, userLocation) {
+    FirebaseFirestore.instance.collection('victims').doc(userId).update({
+      "location": GeoPoint(userLocation.latitude, userLocation.longitude)
+    }).then((value) => showSuccessSnackBar(context, "Location Update"),
+        onError: (e) => print("Error Update: $e"));
   }
 
   showAlertDialogSubmit(BuildContext context, userLocation) {
@@ -345,6 +354,12 @@ class _helpFormState extends State<helpForm> {
                     ),
                     Card(
                         child: Column(children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          updateLocation(user.uid, userLocation);
+                        },
+                        child: Text("Update Location"),
+                      ),
                       ListTile(
                         title: Text(
                           "Description",
@@ -369,14 +384,18 @@ class _helpFormState extends State<helpForm> {
                         title: Text(
                           "Phone Number",
                         ),
-                        subtitle: FutureBuilder<String>(
-                          future: null,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<String> snapshot) {
-                            return Text(
-                              'Phone Not Found',
-                            );
-                          },
+                        subtitle: Row(
+                          children: [
+                            FutureBuilder<String>(
+                              future: null,
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<String> snapshot) {
+                                return Text(
+                                  'Phone Not Found',
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ])),
@@ -426,22 +445,7 @@ class _helpFormState extends State<helpForm> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => NearestShelter()),
-                        );
-                      },
-                      child: Text("Find Nearest Shelter")),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                        onPressed: () {}, child: Text("Update Location")),
-                  )
-                ],
+                children: [],
               ),
             ),
             LayoutBuilder(

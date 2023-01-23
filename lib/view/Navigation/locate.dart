@@ -3,16 +3,18 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/dragmarker.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:spot_me/model/userLocation.dart';
 import 'package:spot_me/model/victims.dart';
 import 'package:spot_me/utils/const.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:map_launcher/src/models.dart' as maps;
 // https://www.youtube.com/watch?v=JiSsS1Xj5uQ
 
 class locatePage extends StatefulWidget {
@@ -365,18 +367,61 @@ class _locatePageState extends State<locatePage> with TickerProviderStateMixin {
                                     Icons.track_changes,
                                     color: Colors.red,
                                   ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                    _animatedMapMove(
-                                        LatLng(victim.location.latitude,
-                                            victim.location.longitude),
-                                        17);
+                                  onPressed: () async {
+                                    final availableMaps =
+                                        await MapLauncher.installedMaps;
+                                    print(availableMaps);
+                                    showModalBottomSheet<void>(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Container(
+                                            height: 150,
+                                            color: Colors.white,
+                                            child: ListView(
+                                              children: <Widget>[
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Center(
+                                                    child: Text(
+                                                        "Choose Map To Locate Victim",
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 15.0,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            fontFamily:
+                                                                "WorkSansBold")),
+                                                  ),
+                                                ),
+                                                for (var map in availableMaps)
+                                                  ListTile(
+                                                    onTap: () => map.showMarker(
+                                                      coords: maps.Coords(
+                                                          victim.location
+                                                              .latitude,
+                                                          victim.location
+                                                              .longitude),
+                                                      title: victim.name,
+                                                    ),
+                                                    title: Text(
+                                                      map.mapName,
+                                                    ),
+                                                    leading: SvgPicture.asset(
+                                                      map.icon,
+                                                      height: 30.0,
+                                                      width: 30.0,
+                                                    ),
+                                                  ),
+                                              ],
+                                            ));
+                                      },
+                                    );
                                   },
                                 ),
                                 Container(
                                   child: Text(
-                                    "Track",
+                                    "Locate",
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,

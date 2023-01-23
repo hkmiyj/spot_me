@@ -20,7 +20,7 @@ addmarker(shelters, markerVictim) {
       width: 30,
       point: LatLng(shelter.location.latitude, shelter.location.longitude),
       builder: (ctx) => Icon(
-        Icons.flag,
+        Icons.night_shelter,
         color: Colors.red,
       ),
     ));
@@ -31,7 +31,6 @@ showMap(context) {
   List<Marker> markerVictim = [];
   var userLocation = Provider.of<UserLocation>(context);
   var _shelter = Provider.of<List<Shelter>>(context, listen: false);
-  addmarker(_shelter, markerVictim);
 
   return FlutterMap(
     options: MapOptions(
