@@ -1,8 +1,0 @@
-mapbox token 
-sec = sk.eyJ1IjoiZGFtZnVkIiwiYSI6ImNsN2o2YWE4ODB2MjgzbnNhcHI1dXl3d3MifQ.zcQEdb0jqMqua2Mibc8IAw
-pub = pk.eyJ1IjoiZGFtZnVkIiwiYSI6ImNsN2s3dHNoMzBmOWIzb3F6OWkyMnM0ZWoifQ.N022hvg6-KtFSQ7NqetikQ
-
-import 'package:location/location.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
